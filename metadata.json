@@ -1,0 +1,6 @@
+{
+  "name": "Software Estimation Suite",
+  "description": "An expert software estimation suite supporting IFPUG Function Point Analysis, COSMIC Function Points, and hybrid estimation models.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
