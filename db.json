@@ -1,0 +1,1429 @@
+{
+  "user_profile": {
+    "id": "95fd8123-aeff-4fb1-9cf8-01f8128d0d52",
+    "email": "umeshs.in@gmail.com",
+    "full_name": "Umesh Sharma",
+    "organisation": "Google Cloud Labs",
+    "role": "estimator",
+    "created_at": "2026-05-25T18:13:21.914+00:00",
+    "jira_config": null,
+    "azure_config": null,
+    "updated_at": "2026-05-28T14:52:44.453Z"
+  },
+  "projects": [
+    {
+      "id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "name": "Estimation for Refund Implementaiton in Billing",
+      "client": "",
+      "description": "",
+      "version": "1.0",
+      "project_type": "Web App",
+      "estimator_id": "95fd8123-aeff-4fb1-9cf8-01f8128d0d52",
+      "status": "Draft",
+      "currency": "SAR",
+      "team_size": 1,
+      "created_at": "2026-05-25T20:56:13.763+00:00",
+      "updated_at": "2026-05-28T14:43:28.677Z"
+    }
+  ],
+  "user_stories": [
+    {
+      "id": "6ea32e93-970a-4f7e-860d-ceb43edb793d",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "story_id": "STORY-101",
+      "role": "Upstream System",
+      "goal": "I want to submit a refund request to the Billing system via a secure API",
+      "benefit": "so that the refund process can be initiated automatically from the originating application",
+      "epic": "General",
+      "module": "Upstream Integration",
+      "priority": "High",
+      "source": "ai",
+      "raw_text": "We need to implement refund functionality in Billing. This will have impact in billing core to create credit and debit note, Integrations with 5 external systems out of which 3 are payment channels, 1 is upstream application from where the request is coming and last one is to send the refund information to ERP",
+      "ai_status": "overridden",
+      "tags": "API, Integration, Refund Request",
+      "created_at": "2026-05-26T16:30:11.709+00:00",
+      "story_points": 8
+    },
+    {
+      "id": "a866755a-9018-464f-8b6b-461d936afc04",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "story_id": "STORY-103",
+      "role": "Billing System",
+      "goal": "I want to automatically generate a credit note upon receiving and validating a refund request",
+      "benefit": "so that the customer's account balance is correctly adjusted and documented in the core billing engine",
+      "epic": "General",
+      "module": "Billing Core",
+      "priority": "High",
+      "source": "ai",
+      "raw_text": "We need to implement refund functionality in Billing. This will have impact in billing core to create credit and debit note, Integrations with 5 external systems out of which 3 are payment channels, 1 is upstream application from where the request is coming and last one is to send the refund information to ERP",
+      "ai_status": "overridden",
+      "tags": "Credit Note, Billing Core, Financials",
+      "created_at": "2026-05-26T16:30:11.71+00:00",
+      "story_points": 8
+    },
+    {
+      "id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "story_id": "STORY-105",
+      "role": "Billing System",
+      "goal": "I want to generate a debit note to handle refund reversals or adjustments",
+      "benefit": "so that we can correct financial discrepancies and maintain accurate ledger records",
+      "epic": "General",
+      "module": "Billing Core",
+      "priority": "Medium",
+      "source": "ai",
+      "raw_text": "We need to implement refund functionality in Billing. This will have impact in billing core to create credit and debit note, Integrations with 5 external systems out of which 3 are payment channels, 1 is upstream application from where the request is coming and last one is to send the refund information to ERP",
+      "ai_status": "overridden",
+      "tags": "Debit Note, Billing Core, Financials",
+      "created_at": "2026-05-26T16:30:11.71+00:00",
+      "story_points": 8
+    },
+    {
+      "id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "story_id": "STORY-107",
+      "role": "Billing System",
+      "goal": "I want to route and process the refund transaction through the three external payment channels",
+      "benefit": "so that the funds are successfully returned to the customer's original payment method",
+      "epic": "General",
+      "module": "Payment Integration",
+      "priority": "High",
+      "source": "ai",
+      "raw_text": "We need to implement refund functionality in Billing. This will have impact in billing core to create credit and debit note, Integrations with 5 external systems out of which 3 are payment channels, 1 is upstream application from where the request is coming and last one is to send the refund information to ERP",
+      "ai_status": "overridden",
+      "tags": "Payment Gateway, Integration, Refund Process",
+      "created_at": "2026-05-26T16:30:11.71+00:00",
+      "story_points": 21
+    },
+    {
+      "id": "2379cb6b-ef3d-4baa-9f8d-1871724e1502",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "story_id": "STORY-109",
+      "role": "Finance Administrator",
+      "goal": "I want the billing system to automatically transmit refund, credit note, and debit note details to the ERP system",
+      "benefit": "so that our general ledger and corporate financial reporting remain synchronized and compliant",
+      "epic": "General",
+      "module": "ERP Integration",
+      "priority": "High",
+      "source": "ai",
+      "raw_text": "We need to implement refund functionality in Billing. This will have impact in billing core to create credit and debit note, Integrations with 5 external systems out of which 3 are payment channels, 1 is upstream application from where the request is coming and last one is to send the refund information to ERP",
+      "ai_status": "overridden",
+      "tags": "ERP, Integration, Ledger Sync",
+      "created_at": "2026-05-26T16:30:11.71+00:00",
+      "story_points": 13
+    }
+  ],
+  "ai_classifications": [
+    {
+      "id": "f2203c0c-de54-4cf0-a90b-9fb00ba5ed3b",
+      "story_id": "6ea32e93-970a-4f7e-860d-ceb43edb793d",
+      "model_type": "fpa",
+      "classification": {
+        "dets": 7,
+        "ftrs": 2,
+        "rets": 0,
+        "reasoning": "The refund request is an External Input (EI) that processes data from an upstream system to trigger a refund. It references 2 FTRs (Transaction and Refund tables) and contains approximately 7 DETs.",
+        "complexity": "High",
+        "confidence": 0.9,
+        "functionType": "EI",
+        "unadjustedFP": 6
+      },
+      "confidence": 1,
+      "flags": [],
+      "ai_provider": "gemini",
+      "created_at": "2026-05-26T16:31:20.274+00:00"
+    },
+    {
+      "id": "456b6211-291d-4209-a9e2-cb1d24daa866",
+      "story_id": "6ea32e93-970a-4f7e-860d-ceb43edb793d",
+      "model_type": "cosmic",
+      "classification": {
+        "cfp": 4,
+        "reasoning": "Identified 4 data movements (1 Entry, 1 Read, 1 Write, 1 Exit) representing a standard transactional process.",
+        "confidence": 0.95,
+        "functionalProcess": "Submit Refund Request"
+      },
+      "confidence": 1,
+      "flags": [],
+      "ai_provider": "gemini",
+      "created_at": "2026-05-26T16:31:20.274+00:00"
+    },
+    {
+      "id": "fee59b0b-1987-4a57-b689-b3717d5a1aee",
+      "story_id": "6ea32e93-970a-4f7e-860d-ceb43edb793d",
+      "model_type": "hybrid",
+      "classification": {
+        "reasoning": "No UI complexity as it is a pure API. Moderate integration risk due to security requirements, and moderate business logic for validating the refund request.",
+        "complexity": "Medium",
+        "confidence": 0.9,
+        "dimensions": {
+          "dataVolume": 2,
+          "uiComplexity": 1,
+          "businessLogic": 3,
+          "integrationRisk": 3
+        },
+        "suggestedWeightScore": 2.25
+      },
+      "confidence": 1,
+      "flags": [],
+      "ai_provider": "gemini",
+      "created_at": "2026-05-26T16:31:20.274+00:00"
+    },
+    {
+      "id": "b07e5dec-55a7-4348-af8e-08f76c1f11f5",
+      "story_id": "a866755a-9018-464f-8b6b-461d936afc04",
+      "model_type": "fpa",
+      "classification": {
+        "dets": 7,
+        "ftrs": 3,
+        "rets": 0,
+        "reasoning": "The process is classified as an External Input (EI) because it receives and processes an external refund request to update internal logical files (Customer Account and Credit Note).",
+        "complexity": "High",
+        "confidence": 0.85,
+        "functionType": "EI",
+        "unadjustedFP": 6
+      },
+      "confidence": 1,
+      "flags": [],
+      "ai_provider": "gemini",
+      "created_at": "2026-05-26T16:31:23.768+00:00"
+    },
+    {
+      "id": "c3f15b43-95c4-49cf-9a7e-072665b50cec",
+      "story_id": "a866755a-9018-464f-8b6b-461d936afc04",
+      "model_type": "cosmic",
+      "classification": {
+        "cfp": 5,
+        "reasoning": "5 data movements identified: 1 Entry, 1 Read, 2 Writes, and 1 Exit.",
+        "confidence": 0.9,
+        "functionalProcess": "Automatic Credit Note Generation"
+      },
+      "confidence": 1,
+      "flags": [],
+      "ai_provider": "gemini",
+      "created_at": "2026-05-26T16:31:23.768+00:00"
+    },
+    {
+      "id": "56192b8b-5aef-4e27-8bb7-8e2814d706b7",
+      "story_id": "a866755a-9018-464f-8b6b-461d936afc04",
+      "model_type": "hybrid",
+      "classification": {
+        "reasoning": "Backend-heavy process with low UI complexity but high business logic complexity due to financial validation and core billing integration.",
+        "complexity": "High",
+        "confidence": 0.85,
+        "dimensions": {
+          "dataVolume": 2,
+          "uiComplexity": 1,
+          "businessLogic": 4,
+          "integrationRisk": 3
+        },
+        "suggestedWeightScore": 6.5
+      },
+      "confidence": 1,
+      "flags": [],
+      "ai_provider": "gemini",
+      "created_at": "2026-05-26T16:31:23.768+00:00"
+    },
+    {
+      "id": "f35d0bcf-f587-4627-837e-625351af99d4",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "model_type": "fpa",
+      "classification": {
+        "dets": 12,
+        "ftrs": 3,
+        "rets": 0,
+        "reasoning": "Generating a debit note is classified as an External Output (EO) because it involves mathematical calculations for adjustments/reversals and updates the ledger. It references 3 FTRs (Refund, Ledger, Debit Note) and approximately 12 DETs.",
+        "complexity": "Average",
+        "confidence": 0.85,
+        "functionType": "EO",
+        "unadjustedFP": 5
+      },
+      "confidence": 1,
+      "flags": [],
+      "ai_provider": "gemini",
+      "created_at": "2026-05-27T15:27:13.347+00:00"
+    },
+    {
+      "id": "8267b7bf-16f4-43a8-9aab-b6fb736bd8d9",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "model_type": "cosmic",
+      "classification": {
+        "cfp": 5,
+        "reasoning": "The process consists of 1 Entry, 2 Reads, 1 Write, and 1 Exit, totaling 5 CFP.",
+        "confidence": 0.9,
+        "functionalProcess": "Generate Debit Note"
+      },
+      "confidence": 1,
+      "flags": [],
+      "ai_provider": "gemini",
+      "created_at": "2026-05-27T15:27:13.347+00:00"
+    },
+    {
+      "id": "13862dfc-c91f-477b-9dcd-e226ded282ee",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "model_type": "hybrid",
+      "classification": {
+        "reasoning": "While the UI is straightforward, the integration risk and business logic are high due to financial ledger consistency requirements and reversal calculations.",
+        "complexity": "Medium",
+        "confidence": 0.85,
+        "dimensions": {
+          "dataVolume": 3,
+          "uiComplexity": 2,
+          "businessLogic": 4,
+          "integrationRisk": 4
+        },
+        "suggestedWeightScore": 6.5
+      },
+      "confidence": 1,
+      "flags": [],
+      "ai_provider": "gemini",
+      "created_at": "2026-05-27T15:27:13.347+00:00"
+    },
+    {
+      "id": "83a2b46d-495d-465c-a5aa-94f0529e9264",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "model_type": "fpa",
+      "classification": {
+        "dets": 8,
+        "ftrs": 3,
+        "rets": 0,
+        "reasoning": "The process acts as an External Output (EO) that routes refund data to external payment channels, requiring 3 FTRs (Refund ILF, Gateway EIF, Account ILF) and 8 DETs.",
+        "complexity": "Average",
+        "confidence": 0.85,
+        "functionType": "EO",
+        "unadjustedFP": 5
+      },
+      "confidence": 1,
+      "flags": [
+        "No UI components identified",
+        "High dependency on external payment gateway APIs"
+      ],
+      "ai_provider": "gemini",
+      "created_at": "2026-05-26T16:32:06.83+00:00"
+    },
+    {
+      "id": "afe41f9e-9a53-4d77-b337-f57d7e974999",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "model_type": "cosmic",
+      "classification": {
+        "cfp": 5,
+        "reasoning": "Identified 5 distinct data movements (2 Entries, 1 Read, 1 Write, 1 Exit) to complete the routing and processing of the refund.",
+        "confidence": 0.9,
+        "functionalProcess": "Route and Process Refund"
+      },
+      "confidence": 1,
+      "flags": [
+        "No UI components identified",
+        "High dependency on external payment gateway APIs"
+      ],
+      "ai_provider": "gemini",
+      "created_at": "2026-05-26T16:32:06.83+00:00"
+    },
+    {
+      "id": "a11ee3ce-e7b7-493b-98ab-f753db43ad9d",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "model_type": "hybrid",
+      "classification": {
+        "reasoning": "Backend-heavy process with high integration risk due to multiple external payment gateways, but minimal UI complexity.",
+        "complexity": "Medium",
+        "confidence": 0.85,
+        "dimensions": {
+          "dataVolume": 2,
+          "uiComplexity": 1,
+          "businessLogic": 3,
+          "integrationRisk": 4
+        },
+        "suggestedWeightScore": 5.5
+      },
+      "confidence": 1,
+      "flags": [
+        "No UI components identified",
+        "High dependency on external payment gateway APIs"
+      ],
+      "ai_provider": "gemini",
+      "created_at": "2026-05-26T16:32:06.83+00:00"
+    },
+    {
+      "id": "71ec85da-36cd-48fe-838d-67f5d68808d0",
+      "story_id": "2379cb6b-ef3d-4baa-9f8d-1871724e1502",
+      "model_type": "fpa",
+      "classification": {
+        "dets": 15,
+        "ftrs": 2,
+        "rets": 0,
+        "reasoning": "Output transaction processing values into external payloads.",
+        "complexity": "Average",
+        "confidence": 88,
+        "functionType": "EO",
+        "unadjustedFP": 5
+      },
+      "confidence": 88,
+      "flags": [],
+      "ai_provider": "gemini-fallback",
+      "created_at": "2026-05-26T16:31:44.518+00:00"
+    },
+    {
+      "id": "387f7f0d-1fa2-4f4b-9411-2e6d2ed0e22a",
+      "story_id": "2379cb6b-ef3d-4baa-9f8d-1871724e1502",
+      "model_type": "cosmic",
+      "classification": {
+        "cfp": 4,
+        "reasoning": "Calculated COSMIC metric corresponding to 4 boundary transitions.",
+        "confidence": 90,
+        "functionalProcess": "EO functional system process"
+      },
+      "confidence": 90,
+      "flags": [],
+      "ai_provider": "gemini-fallback",
+      "created_at": "2026-05-26T16:31:44.518+00:00"
+    },
+    {
+      "id": "5a706b37-ca0d-4d41-92b4-03a88fc47a2a",
+      "story_id": "2379cb6b-ef3d-4baa-9f8d-1871724e1502",
+      "model_type": "hybrid",
+      "classification": {
+        "reasoning": "Heuristic dimension scoring of UI, data weight, custom API parameters, and validation algorithms.",
+        "complexity": "Medium",
+        "confidence": 85,
+        "dimensions": {
+          "dataVolume": 4,
+          "uiComplexity": 4,
+          "businessLogic": 8,
+          "integrationRisk": 3
+        },
+        "suggestedWeightScore": 47.5
+      },
+      "confidence": 85,
+      "flags": [],
+      "ai_provider": "gemini-fallback",
+      "created_at": "2026-05-26T16:31:44.518+00:00"
+    }
+  ],
+  "ai_overrides": [
+    {
+      "id": "ea343147-e2c7-4640-a4ea-77a736b65dbf",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "user_id": "95fd8123-aeff-4fb1-9cf8-01f8128d0d52",
+      "model_type": "fpa",
+      "field_name": "complexity",
+      "old_value": "Average",
+      "new_value": "High",
+      "reason": "this has integration with multiple external API's from various payment channels",
+      "created_at": "2026-05-26T19:38:46.339+00:00"
+    },
+    {
+      "id": "2fb2717d-017a-47c5-ba68-5afdb365ac7e",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "user_id": "95fd8123-aeff-4fb1-9cf8-01f8128d0d52",
+      "model_type": "fpa",
+      "field_name": "complexity",
+      "old_value": "Average",
+      "new_value": "High",
+      "reason": "there are 3 payment channels ie; Point of sale, online payment having visa, mastercard and Mada, and SADAD.  Also AI has flagged it.  ",
+      "created_at": "2026-05-27T15:22:40.497+00:00"
+    },
+    {
+      "id": "f64dc7d3-d78b-4ff2-a6f3-4976d3e297e0",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "user_id": "95fd8123-aeff-4fb1-9cf8-01f8128d0d52",
+      "model_type": "fpa",
+      "field_name": "complexity",
+      "old_value": "Average",
+      "new_value": "High",
+      "reason": "This is an EI as well if there are adjustments that need to be made then this will be received as an Input",
+      "created_at": "2026-05-27T15:25:58.21+00:00"
+    },
+    {
+      "id": "680d425f-7d08-4e97-8619-005a19e895a7",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "user_id": "95fd8123-aeff-4fb1-9cf8-01f8128d0d52",
+      "model_type": "fpa",
+      "field_name": "complexity",
+      "old_value": "Average",
+      "new_value": "High",
+      "reason": "This has to be an EI",
+      "created_at": "2026-05-27T15:29:36.511+00:00"
+    },
+    {
+      "id": "2cd78f8f-fbe3-427c-bb34-bf5c2136d572",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "user_id": "95fd8123-aeff-4fb1-9cf8-01f8128d0d52",
+      "model_type": "fpa",
+      "field_name": "complexity",
+      "old_value": "Average",
+      "new_value": "High",
+      "reason": "3 integrations with different payment channels",
+      "created_at": "2026-05-27T15:30:04.366+00:00"
+    }
+  ],
+  "fpa_gsc_ratings": [
+    {
+      "id": "693aa983-294f-4f25-8114-3be61fadcbb4",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "gsc_number": 3,
+      "rating": 4
+    },
+    {
+      "id": "21c1b5d2-07aa-4f9d-a033-fb8bee6d28a4",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "gsc_number": 10,
+      "rating": 3
+    },
+    {
+      "id": "9b1d9647-5866-4752-8213-4cc8f3395cb0",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "gsc_number": 11,
+      "rating": 3
+    },
+    {
+      "id": "5bf61e79-d400-44bf-821f-97655cb97841",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "gsc_number": 1,
+      "rating": 2
+    }
+  ],
+  "cosmic_movements": [
+    {
+      "id": "bacbb3eb-8c45-41c8-818d-408746c2705c",
+      "story_id": "6ea32e93-970a-4f7e-860d-ceb43edb793d",
+      "name": "Receive Refund Request",
+      "movement_type": "Entry",
+      "data_group": "Refund Request",
+      "reasoning": "Receives the refund request payload from the upstream system.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:20.274+00:00"
+    },
+    {
+      "id": "712447d6-5868-46ae-9abb-f72d210ffbe3",
+      "story_id": "6ea32e93-970a-4f7e-860d-ceb43edb793d",
+      "name": "Validate Original Transaction",
+      "movement_type": "Read",
+      "data_group": "Original Transaction",
+      "reasoning": "Reads the original transaction data to validate refund eligibility.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:20.274+00:00"
+    },
+    {
+      "id": "1592a644-11a8-49db-8bc8-b41bda58fc8e",
+      "story_id": "6ea32e93-970a-4f7e-860d-ceb43edb793d",
+      "name": "Store Refund Record",
+      "movement_type": "Write",
+      "data_group": "Refund Record",
+      "reasoning": "Writes the new refund request record to the database.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:20.274+00:00"
+    },
+    {
+      "id": "6c38d4c7-fb1e-4522-9e84-29210745ba12",
+      "story_id": "6ea32e93-970a-4f7e-860d-ceb43edb793d",
+      "name": "Send Refund Response",
+      "movement_type": "Exit",
+      "data_group": "Refund Response",
+      "reasoning": "Sends the confirmation or error response back to the upstream system.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:20.274+00:00"
+    },
+    {
+      "id": "7acc1c8d-0340-4b20-adff-663319e38db0",
+      "story_id": "a866755a-9018-464f-8b6b-461d936afc04",
+      "name": "Receive Refund Request",
+      "movement_type": "Entry",
+      "data_group": "Refund Request",
+      "reasoning": "Receives the refund request data from the triggering system.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:23.768+00:00"
+    },
+    {
+      "id": "0a157871-e12c-4611-876f-65c0d9d3ad92",
+      "story_id": "a866755a-9018-464f-8b6b-461d936afc04",
+      "name": "Read Customer Account",
+      "movement_type": "Read",
+      "data_group": "Customer Account",
+      "reasoning": "Reads customer account details to validate the refund request.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:23.768+00:00"
+    },
+    {
+      "id": "49501846-a315-48d7-97a2-6bf293945e2d",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "name": "Receive Refund Request",
+      "movement_type": "Entry",
+      "data_group": "Refund Request",
+      "reasoning": "Receives the trigger and details to initiate the refund.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:33.292+00:00"
+    },
+    {
+      "id": "1f4fd56e-6c6f-4245-b53e-a93d2a1f2927",
+      "story_id": "2379cb6b-ef3d-4baa-9f8d-1871724e1502",
+      "name": "Transmit Payload to ERP",
+      "movement_type": "Exit",
+      "data_group": "ERP Transaction Payload",
+      "reasoning": "Sends the formatted financial details to the external ERP system API.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:41.008+00:00"
+    },
+    {
+      "id": "61d819bf-bfc7-47e4-a8f0-6bd507a8a780",
+      "story_id": "2379cb6b-ef3d-4baa-9f8d-1871724e1502",
+      "name": "Receive ERP Confirmation",
+      "movement_type": "Entry",
+      "data_group": "ERP Response",
+      "reasoning": "Receives the success or error status back from the ERP system.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:41.008+00:00"
+    },
+    {
+      "id": "a8277c3d-914e-40a6-8ea7-73c1c643f3b1",
+      "story_id": "2379cb6b-ef3d-4baa-9f8d-1871724e1502",
+      "name": "Update Sync Status",
+      "movement_type": "Write",
+      "data_group": "Billing Transactions",
+      "reasoning": "Writes the synchronization status and ERP reference ID back to the local database.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:41.008+00:00"
+    },
+    {
+      "id": "7583d54d-f3c1-48b1-80f0-933b241ae32a",
+      "story_id": "a866755a-9018-464f-8b6b-461d936afc04",
+      "name": "Confirm Generation Status",
+      "movement_type": "Exit",
+      "data_group": "Execution Status",
+      "reasoning": "Outputs the confirmation or status of the credit note generation.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:23.768+00:00"
+    },
+    {
+      "id": "11c351d4-afe2-41b3-8d4b-2bbe66688be5",
+      "story_id": "2379cb6b-ef3d-4baa-9f8d-1871724e1502",
+      "name": "Request summary",
+      "movement_type": "Entry",
+      "data_group": "QueryFilter",
+      "reasoning": "Filter request trigger payload entering boundary.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:44.518+00:00"
+    },
+    {
+      "id": "c473c544-ede4-4983-bff5-a8e1984b45e5",
+      "story_id": "2379cb6b-ef3d-4baa-9f8d-1871724e1502",
+      "name": "Read history",
+      "movement_type": "Read",
+      "data_group": "StoryStorage",
+      "reasoning": "Reading state values from internal storage.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:44.518+00:00"
+    },
+    {
+      "id": "4ebd738c-996c-407e-b4a3-59c148dc83ab",
+      "story_id": "2379cb6b-ef3d-4baa-9f8d-1871724e1502",
+      "name": "Format document",
+      "movement_type": "Write",
+      "data_group": "SessionLogs",
+      "reasoning": "Logging print action transaction.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:44.518+00:00"
+    },
+    {
+      "id": "4ef5a783-6914-4562-8d30-04ba322ae314",
+      "story_id": "2379cb6b-ef3d-4baa-9f8d-1871724e1502",
+      "name": "Presenter output",
+      "movement_type": "Exit",
+      "data_group": "DocumentPayload",
+      "reasoning": "Presenting formatted result stream back.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:44.518+00:00"
+    },
+    {
+      "id": "365263a1-d1ff-4fc3-aa90-cfd8d28d06db",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "name": "Receive Refund Request",
+      "movement_type": "Entry",
+      "data_group": "Refund Request",
+      "reasoning": "Receives the trigger and details to initiate the refund.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:32:06.83+00:00"
+    },
+    {
+      "id": "10d175c2-7155-4be3-b329-c727ad9eb267",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "name": "Read Original Transaction",
+      "movement_type": "Read",
+      "data_group": "Transaction Record",
+      "reasoning": "Reads the original payment details to identify the correct channel.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:32:06.83+00:00"
+    },
+    {
+      "id": "e98d862c-d1d6-410f-b864-4dd76a5da019",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "name": "Trigger Generation Request",
+      "movement_type": "Entry",
+      "data_group": "Debit Note Request",
+      "reasoning": "Receives the trigger and parameters to generate the debit note.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-27T15:27:13.347+00:00"
+    },
+    {
+      "id": "67a16a28-585a-42e6-a042-3c8a89220523",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "name": "Read Original Refund/Transaction",
+      "movement_type": "Read",
+      "data_group": "Refund Transaction",
+      "reasoning": "Reads the original transaction details to calculate adjustments.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-27T15:27:13.347+00:00"
+    },
+    {
+      "id": "49269f90-93de-48b5-bcca-88532a5cf1a0",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "name": "Read Ledger Account Details",
+      "movement_type": "Read",
+      "data_group": "Ledger Account",
+      "reasoning": "Reads account rules and current balances.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-27T15:27:13.347+00:00"
+    },
+    {
+      "id": "93680a9e-5808-4f5c-bc17-972e006eb2bc",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "name": "Write Debit Note Record",
+      "movement_type": "Write",
+      "data_group": "Debit Note",
+      "reasoning": "Persists the newly created debit note record in the database.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-27T15:27:13.347+00:00"
+    },
+    {
+      "id": "d095e019-e753-45bd-9af1-af0d1a644675",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "name": "Update Refund Status",
+      "movement_type": "Write",
+      "data_group": "Refund Record",
+      "reasoning": "Writes the final transaction status to the internal database.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:32:06.83+00:00"
+    },
+    {
+      "id": "55c9473a-d2c0-4de6-a271-76d3cc9f9953",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "name": "Read Ledger Account",
+      "movement_type": "Read",
+      "data_group": "Ledger Account",
+      "reasoning": "Reads current ledger account states to prepare the adjustment entry.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:25.792+00:00"
+    },
+    {
+      "id": "8ec87c2a-ba16-4bc1-8376-a387dfe5f16a",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "name": "Write Debit Note",
+      "movement_type": "Write",
+      "data_group": "Debit Note",
+      "reasoning": "Persists the newly created debit note record in the database.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:25.792+00:00"
+    },
+    {
+      "id": "a20f7235-dab1-4a01-9c59-b9169f6f19d9",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "name": "Receive Refund Request",
+      "movement_type": "Entry",
+      "data_group": "Refund Request",
+      "reasoning": "Receives the refund trigger and transaction details from the billing system.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:39.537+00:00"
+    },
+    {
+      "id": "f964490c-73a9-4dd6-9a29-b95515ec32e9",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "name": "Read Original Transaction",
+      "movement_type": "Read",
+      "data_group": "Transaction History",
+      "reasoning": "Reads original payment details to identify the correct routing channel.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:33.292+00:00"
+    },
+    {
+      "id": "7b73a0e1-a1c6-4b56-a149-548aecb2d8b1",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "name": "Send External Refund Request",
+      "movement_type": "Exit",
+      "data_group": "External Payment API",
+      "reasoning": "Sends the refund command to the selected external payment channel.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:33.292+00:00"
+    },
+    {
+      "id": "ee866e65-5f79-41a9-b47f-b3a9e723734a",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "name": "Receive External Confirmation",
+      "movement_type": "Entry",
+      "data_group": "External Payment API",
+      "reasoning": "Receives the success or failure response from the external channel.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:33.292+00:00"
+    },
+    {
+      "id": "1faf8a06-1f25-47d7-856e-9295159c2d4f",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "name": "Update Refund Status",
+      "movement_type": "Write",
+      "data_group": "Refund Record",
+      "reasoning": "Writes the final transaction status to the internal database.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:33.292+00:00"
+    },
+    {
+      "id": "cd254522-62cc-442b-a981-56d32989b1e8",
+      "story_id": "2379cb6b-ef3d-4baa-9f8d-1871724e1502",
+      "name": "Read Billing Transactions",
+      "movement_type": "Read",
+      "data_group": "Billing Transactions",
+      "reasoning": "Reads the refund, credit note, or debit note details from the local database.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:41.008+00:00"
+    },
+    {
+      "id": "affc03eb-7757-4140-a0f3-01b5469f9f94",
+      "story_id": "2379cb6b-ef3d-4baa-9f8d-1871724e1502",
+      "name": "Read Integration Mapping",
+      "movement_type": "Read",
+      "data_group": "ERP Integration Settings",
+      "reasoning": "Reads the GL account mapping and ERP endpoint configurations.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:41.008+00:00"
+    },
+    {
+      "id": "eb2a9c3a-503d-47b4-a1ab-57102d811f3d",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "name": "Send Gateway Refund Request",
+      "movement_type": "Exit",
+      "data_group": "Gateway Protocol",
+      "reasoning": "Sends the refund transaction details to the selected external payment channel.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:39.537+00:00"
+    },
+    {
+      "id": "984eabd4-92a0-4010-87df-b6514fc1031b",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "name": "Receive Gateway Response",
+      "movement_type": "Entry",
+      "data_group": "Gateway Protocol",
+      "reasoning": "Receives the success or failure confirmation from the external payment channel.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:39.537+00:00"
+    },
+    {
+      "id": "2ceeda54-06f4-463e-b408-096a9b7e230f",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "name": "Update Transaction Status",
+      "movement_type": "Write",
+      "data_group": "Transaction History",
+      "reasoning": "Writes the updated refund status and reference ID to the internal database.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:39.537+00:00"
+    },
+    {
+      "id": "227450da-31d8-47ee-aad5-077c990861f2",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "name": "Confirm Refund Status",
+      "movement_type": "Exit",
+      "data_group": "Refund Status",
+      "reasoning": "Outputs the final processing status back to the billing system or user interface.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:39.537+00:00"
+    },
+    {
+      "id": "e6c5a0b6-f17b-47b5-8691-803a122bd1a9",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "name": "Send Refund to Gateway",
+      "movement_type": "Exit",
+      "data_group": "External Payment Gateway",
+      "reasoning": "Sends the refund transaction to the selected external payment channel.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:32:06.83+00:00"
+    },
+    {
+      "id": "8b20e723-0086-4a91-8abc-0d51cfb42e17",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "name": "Receive Gateway Response",
+      "movement_type": "Entry",
+      "data_group": "Gateway Response",
+      "reasoning": "Receives the success or failure status from the external channel.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:32:06.83+00:00"
+    },
+    {
+      "id": "4a740dd6-df26-415b-b385-29643c9bf72a",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "name": "Present/Send Debit Note",
+      "movement_type": "Exit",
+      "data_group": "Debit Note",
+      "reasoning": "Outputs the generated debit note details to the user or external billing system.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-27T15:27:13.347+00:00"
+    },
+    {
+      "id": "7732aa0b-73d7-4fe4-a46f-9b8ddab908b9",
+      "story_id": "a866755a-9018-464f-8b6b-461d936afc04",
+      "name": "Update Account Balance",
+      "movement_type": "Write",
+      "data_group": "Customer Account",
+      "reasoning": "Updates the customer's account balance in the database.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:23.768+00:00"
+    },
+    {
+      "id": "5905a87f-156c-4270-8a01-41ba4f821284",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "name": "Receive Debit Note Request",
+      "movement_type": "Entry",
+      "data_group": "Debit Note Request",
+      "reasoning": "Receives the trigger and details (original transaction ID, adjustment amount, reason) to initiate generation.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:25.792+00:00"
+    },
+    {
+      "id": "3d11ba5b-1d20-43f5-ad53-67128541f2d2",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "name": "Read Original Transaction",
+      "movement_type": "Read",
+      "data_group": "Original Transaction",
+      "reasoning": "Reads the original transaction or refund details to validate the reversal.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:25.792+00:00"
+    },
+    {
+      "id": "69cbf70f-d68f-4acd-9c7f-ef45841026d1",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "name": "Write Ledger Entry",
+      "movement_type": "Write",
+      "data_group": "Ledger Account",
+      "reasoning": "Updates or writes the adjustment entry to the ledger to maintain accurate records.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:25.792+00:00"
+    },
+    {
+      "id": "b48e5346-92f9-45e1-b35e-4f6a9e321933",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "name": "Present Debit Note",
+      "movement_type": "Exit",
+      "data_group": "Debit Note",
+      "reasoning": "Outputs the generated debit note details or confirmation back to the user/system.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:25.792+00:00"
+    },
+    {
+      "id": "46595558-afec-49ec-9b59-222f59f298d0",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "name": "Read Original Transaction",
+      "movement_type": "Read",
+      "data_group": "Transaction History",
+      "reasoning": "Reads the original payment record to identify the correct payment method and channel.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:39.537+00:00"
+    },
+    {
+      "id": "5cf2027d-5745-4807-be81-bdc6d49425f2",
+      "story_id": "a866755a-9018-464f-8b6b-461d936afc04",
+      "name": "Write Credit Note",
+      "movement_type": "Write",
+      "data_group": "Credit Note",
+      "reasoning": "Creates and stores the new credit note record.",
+      "is_ai_generated": true,
+      "created_at": "2026-05-26T16:31:23.768+00:00"
+    }
+  ],
+  "hybrid_criteria": [
+    {
+      "id": "b6fd962f-4b19-4da4-9326-1daa023946ed",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "name": "UI Complexity",
+      "max_score": 10,
+      "weight_percent": 15,
+      "description": "Interactive elements, visual animations, responsiveness standards",
+      "sort_order": 1
+    },
+    {
+      "id": "f4a99676-b6b5-470d-ae7c-e26c32b93c49",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "name": "Integration Risk",
+      "max_score": 10,
+      "weight_percent": 15,
+      "description": "Third party bindings, security handshake scopes, latency expectations",
+      "sort_order": 2
+    },
+    {
+      "id": "9f144ead-8d53-48ef-b02e-f6cd905d579d",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "name": "Data Volume",
+      "max_score": 10,
+      "weight_percent": 10,
+      "description": "Query count requirements, schema dimensions, indexing overhead",
+      "sort_order": 3
+    },
+    {
+      "id": "63854098-677a-4f6f-896c-3910c31fc915",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "name": "Business Logic",
+      "max_score": 10,
+      "weight_percent": 20,
+      "description": "Complex rulesets, calculation steps, compliance constraints",
+      "sort_order": 4
+    },
+    {
+      "id": "02a43e40-9e3e-4071-93a8-f2512efa7a02",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "name": "Technical Complexity",
+      "max_score": 5,
+      "weight_percent": 20,
+      "description": "Custom functional criteria indicator",
+      "sort_order": 5
+    },
+    {
+      "id": "fcaca647-7e2a-4800-8b11-43158ee633e8",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "name": "Non Functional Requirements",
+      "max_score": 5,
+      "weight_percent": 10,
+      "description": "Performance of the application, Penetration Tests",
+      "sort_order": 6
+    },
+    {
+      "id": "28a5462b-f16e-40d8-97d4-6e5325f28f04",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "name": "Requirement Clarity",
+      "max_score": 5,
+      "weight_percent": 10,
+      "description": "Custom functional criteria indicator",
+      "sort_order": 7
+    }
+  ],
+  "hybrid_scores": [
+    {
+      "id": "0737c268-12e8-4711-8383-b6d8092055ff",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "criterion_id": "9f144ead-8d53-48ef-b02e-f6cd905d579d",
+      "score": 4,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "3d7e68d4-cc71-4852-aa94-0ff33e6b2546",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "criterion_id": "63854098-677a-4f6f-896c-3910c31fc915",
+      "score": 2,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "312b9e26-240e-45c5-a28d-efd964d2c053",
+      "story_id": "6ea32e93-970a-4f7e-860d-ceb43edb793d",
+      "criterion_id": "02a43e40-9e3e-4071-93a8-f2512efa7a02",
+      "score": 1,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "ba7e4f0a-5693-4504-b904-0675d1cb8187",
+      "story_id": "a866755a-9018-464f-8b6b-461d936afc04",
+      "criterion_id": "02a43e40-9e3e-4071-93a8-f2512efa7a02",
+      "score": 4,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "66085be5-f4bc-464d-80ab-740783bc10b1",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "criterion_id": "02a43e40-9e3e-4071-93a8-f2512efa7a02",
+      "score": 5,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "9f633420-ee8f-419d-a2bc-6083a6b2aa32",
+      "story_id": "a866755a-9018-464f-8b6b-461d936afc04",
+      "criterion_id": "fcaca647-7e2a-4800-8b11-43158ee633e8",
+      "score": 1,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "c893f364-d4af-4d1c-9738-6ff5a2f39573",
+      "story_id": "2379cb6b-ef3d-4baa-9f8d-1871724e1502",
+      "criterion_id": "fcaca647-7e2a-4800-8b11-43158ee633e8",
+      "score": 1,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "806cfa2b-2e06-4844-af68-2f14e39d648e",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "criterion_id": "28a5462b-f16e-40d8-97d4-6e5325f28f04",
+      "score": 2,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "fdd1b4a8-1e59-467b-9442-67ae991dabee",
+      "story_id": "2379cb6b-ef3d-4baa-9f8d-1871724e1502",
+      "criterion_id": "28a5462b-f16e-40d8-97d4-6e5325f28f04",
+      "score": 5,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "86b01fe7-c158-4c15-ad77-3a691580cb0f",
+      "story_id": "6ea32e93-970a-4f7e-860d-ceb43edb793d",
+      "criterion_id": "b6fd962f-4b19-4da4-9326-1daa023946ed",
+      "score": 1,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "00c8678f-ae0b-4a5f-9358-7be25be82491",
+      "story_id": "6ea32e93-970a-4f7e-860d-ceb43edb793d",
+      "criterion_id": "f4a99676-b6b5-470d-ae7c-e26c32b93c49",
+      "score": 4,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "37975845-c61c-4a8c-8d4e-ae576f5fc141",
+      "story_id": "6ea32e93-970a-4f7e-860d-ceb43edb793d",
+      "criterion_id": "9f144ead-8d53-48ef-b02e-f6cd905d579d",
+      "score": 3,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "8917045f-2378-44e3-a548-5dd1783497e4",
+      "story_id": "6ea32e93-970a-4f7e-860d-ceb43edb793d",
+      "criterion_id": "63854098-677a-4f6f-896c-3910c31fc915",
+      "score": 1,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "dc673da8-5f84-47dd-aa6f-d5d0d7328ae9",
+      "story_id": "a866755a-9018-464f-8b6b-461d936afc04",
+      "criterion_id": "b6fd962f-4b19-4da4-9326-1daa023946ed",
+      "score": 1,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "46734c1a-b42d-495d-a897-91a3c66b3a4b",
+      "story_id": "a866755a-9018-464f-8b6b-461d936afc04",
+      "criterion_id": "f4a99676-b6b5-470d-ae7c-e26c32b93c49",
+      "score": 1,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "10288950-a5cc-4be7-8942-fdd860983dc6",
+      "story_id": "a866755a-9018-464f-8b6b-461d936afc04",
+      "criterion_id": "9f144ead-8d53-48ef-b02e-f6cd905d579d",
+      "score": 1,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "64be0553-dbf4-4f8b-adbd-789ebcb2dd3a",
+      "story_id": "a866755a-9018-464f-8b6b-461d936afc04",
+      "criterion_id": "63854098-677a-4f6f-896c-3910c31fc915",
+      "score": 4,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "ac8465e4-9177-49b2-9bf2-126866a51aaf",
+      "story_id": "2379cb6b-ef3d-4baa-9f8d-1871724e1502",
+      "criterion_id": "b6fd962f-4b19-4da4-9326-1daa023946ed",
+      "score": 1,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "26e7645c-e51b-41a8-8232-7348a1a822d9",
+      "story_id": "2379cb6b-ef3d-4baa-9f8d-1871724e1502",
+      "criterion_id": "f4a99676-b6b5-470d-ae7c-e26c32b93c49",
+      "score": 4,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "aeb4da0b-5678-46ef-8da5-fe348074b883",
+      "story_id": "2379cb6b-ef3d-4baa-9f8d-1871724e1502",
+      "criterion_id": "9f144ead-8d53-48ef-b02e-f6cd905d579d",
+      "score": 3,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "898290e6-710d-47d2-be71-13243600069c",
+      "story_id": "2379cb6b-ef3d-4baa-9f8d-1871724e1502",
+      "criterion_id": "63854098-677a-4f6f-896c-3910c31fc915",
+      "score": 1,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "5bd979a3-efb4-49db-bf0e-aee6a5d3bd12",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "criterion_id": "b6fd962f-4b19-4da4-9326-1daa023946ed",
+      "score": 1,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "9c80d7a1-dcd8-45f5-8eec-0543c59ecd97",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "criterion_id": "f4a99676-b6b5-470d-ae7c-e26c32b93c49",
+      "score": 2,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "cf6ad52a-00ba-4c71-8b35-0667fc03351b",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "criterion_id": "9f144ead-8d53-48ef-b02e-f6cd905d579d",
+      "score": 3,
+      "is_ai_suggested": true
+    },
+    {
+      "id": "19a63e6a-4d88-4504-afe6-3dabd1768401",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "criterion_id": "63854098-677a-4f6f-896c-3910c31fc915",
+      "score": 4,
+      "is_ai_suggested": true
+    },
+    {
+      "id": "5cbed5bf-fe07-445d-b2ce-4ba395ca7399",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "criterion_id": "b6fd962f-4b19-4da4-9326-1daa023946ed",
+      "score": 1,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "34d370ea-2610-4e9f-83d9-2e476198bca9",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "criterion_id": "f4a99676-b6b5-470d-ae7c-e26c32b93c49",
+      "score": 4,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "b7ab4ace-30b4-4f9b-b1ca-f435e6248fa5",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "criterion_id": "02a43e40-9e3e-4071-93a8-f2512efa7a02",
+      "score": 5,
+      "is_ai_suggested": true
+    },
+    {
+      "id": "35342048-feb5-46b2-b60b-2c5bec6af1ed",
+      "story_id": "2379cb6b-ef3d-4baa-9f8d-1871724e1502",
+      "criterion_id": "02a43e40-9e3e-4071-93a8-f2512efa7a02",
+      "score": 0,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "dfa253fd-664f-4d7b-84ea-a74b7a48bb66",
+      "story_id": "6ea32e93-970a-4f7e-860d-ceb43edb793d",
+      "criterion_id": "fcaca647-7e2a-4800-8b11-43158ee633e8",
+      "score": 1,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "434ca38f-af7d-46d8-893b-44db0dd48d29",
+      "story_id": "8f6bdac6-974c-4ce7-a860-357585487942",
+      "criterion_id": "fcaca647-7e2a-4800-8b11-43158ee633e8",
+      "score": 2,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "0a3dd24e-69b2-43bc-8bc5-434b866d2478",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "criterion_id": "fcaca647-7e2a-4800-8b11-43158ee633e8",
+      "score": 2,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "53735396-bc40-4a3a-a299-290a777c431b",
+      "story_id": "6ea32e93-970a-4f7e-860d-ceb43edb793d",
+      "criterion_id": "28a5462b-f16e-40d8-97d4-6e5325f28f04",
+      "score": 5,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "263525aa-c445-41b3-91e1-84b77c47a1f7",
+      "story_id": "a866755a-9018-464f-8b6b-461d936afc04",
+      "criterion_id": "28a5462b-f16e-40d8-97d4-6e5325f28f04",
+      "score": 4,
+      "is_ai_suggested": false
+    },
+    {
+      "id": "0c18cff4-2148-4452-963a-0ef41e67d7ec",
+      "story_id": "b8eebbe8-45cf-469b-878f-52c43dfa663b",
+      "criterion_id": "28a5462b-f16e-40d8-97d4-6e5325f28f04",
+      "score": 5,
+      "is_ai_suggested": false
+    }
+  ],
+  "overheads": [
+    {
+      "id": "oh-pm-dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "name": "PM + governance",
+      "applies_to": {
+        "fpa": true,
+        "cosmic": true,
+        "hybrid": true
+      },
+      "method": "percentage",
+      "value": 10,
+      "is_active": true,
+      "sort_order": 1
+    },
+    {
+      "id": "oh-ba-dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "name": "Business Analysis",
+      "applies_to": {
+        "fpa": true,
+        "cosmic": true,
+        "hybrid": true
+      },
+      "method": "percentage",
+      "value": 15,
+      "is_active": true,
+      "sort_order": 2
+    },
+    {
+      "id": "oh-ux-dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "name": "UI/UX",
+      "applies_to": {
+        "fpa": true,
+        "cosmic": true,
+        "hybrid": true
+      },
+      "method": "percentage",
+      "value": 8,
+      "is_active": true,
+      "sort_order": 3
+    },
+    {
+      "id": "oh-qa-dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "name": "Quality Assurance (QA)",
+      "applies_to": {
+        "fpa": true,
+        "cosmic": true,
+        "hybrid": true
+      },
+      "method": "percentage",
+      "value": 15,
+      "is_active": true,
+      "sort_order": 4
+    },
+    {
+      "id": "oh-sc-dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "name": "Security",
+      "applies_to": {
+        "fpa": true,
+        "cosmic": true,
+        "hybrid": true
+      },
+      "method": "percentage",
+      "value": 5,
+      "is_active": true,
+      "sort_order": 5
+    },
+    {
+      "id": "oh-uat-dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "name": "UAT Support",
+      "applies_to": {
+        "fpa": true,
+        "cosmic": true,
+        "hybrid": true
+      },
+      "method": "percentage",
+      "value": 10,
+      "is_active": true,
+      "sort_order": 6
+    },
+    {
+      "id": "oh-dep-dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "name": "Deployment",
+      "applies_to": {
+        "fpa": true,
+        "cosmic": true,
+        "hybrid": true
+      },
+      "method": "percentage",
+      "value": 5,
+      "is_active": true,
+      "sort_order": 7
+    },
+    {
+      "id": "oh-risk-dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "name": "Risk",
+      "applies_to": {
+        "fpa": true,
+        "cosmic": true,
+        "hybrid": true
+      },
+      "method": "percentage",
+      "value": 10,
+      "is_active": true,
+      "sort_order": 8
+    }
+  ],
+  "cost_configs": [
+    {
+      "id": "6aa76614-9f97-44cf-8f43-1d47b6868555",
+      "project_id": "dfd365cf-b4a9-4447-a5a5-94793a02288e",
+      "fpa_cost_per_point": 1875,
+      "cosmic_cost_per_point": 1875,
+      "hybrid_cost_per_point": 1875,
+      "productivity_rate": 1.5,
+      "working_days_per_month": 22,
+      "use_role_rates": false,
+      "roles": [
+        {
+          "name": "Developer",
+          "daily_rate": 600,
+          "allocation_percent": 60
+        },
+        {
+          "name": "Tester",
+          "daily_rate": 450,
+          "allocation_percent": 25
+        },
+        {
+          "name": "Project Manager",
+          "daily_rate": 800,
+          "allocation_percent": 15
+        }
+      ],
+      "fpa_productivity_rate": 0.5,
+      "cosmic_productivity_rate": 1.5,
+      "hybrid_productivity_rate": 1.5
+    }
+  ],
+  "system_config": {
+    "default_currency": "SAR",
+    "default_productivity_rate": 1.5,
+    "default_fpa_productivity_rate": 0.75,
+    "default_cosmic_productivity_rate": 1.5,
+    "default_hybrid_productivity_rate": 1.5,
+    "default_fpa_cost_per_point": 1875,
+    "default_cosmic_cost_per_point": 1875,
+    "default_hybrid_cost_per_point": 1875,
+    "ai_primary_provider": "gemini",
+    "cf_ai_model": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+    "groq_model": "llama-3.3-70b-versatile",
+    "gemini_enabled": true,
+    "ai_fallback_enabled": true,
+    "jira_url": null,
+    "jira_project_key": null,
+    "azure_org_url": null,
+    "azure_project": null,
+    "oh_pm_governance": 10,
+    "oh_business_analysis": 15,
+    "oh_ui_ux": 8,
+    "oh_qa": 15,
+    "oh_security": 5,
+    "oh_uat_support": 10,
+    "oh_deployment": 5,
+    "oh_risk": 10,
+    "created_at": "2026-05-25T21:04:57.307+00:00",
+    "updated_at": "2026-05-25T21:04:57.307+00:00"
+  },
+  "cf_usage": [],
+  "groq_usage": [],
+  "gemini_usage": [],
+  "ai_errors": [],
+  "estimator_feedback": []
+}
