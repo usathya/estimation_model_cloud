@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useProject } from '../../context/ProjectContext';
-import { useAuth } from '../../context/AuthContext';
-import { calculateFpaComplexityAndPoints, calculateFpaTotalMetrics, calculateOverheadImpacts } from '../../lib/engines';
-import { FpaClassification } from '../../types';
-import { 
-  Binary, 
-  HelpCircle, 
-  Sliders, 
-  ChevronDown, 
-  ChevronUp, 
+import { useProject } from '../../context/ProjectContext.js';
+import { useAuth } from '../../context/AuthContext.js';
+import { calculateFpaComplexityAndPoints, calculateFpaTotalMetrics, calculateOverheadImpacts } from '../../lib/engines.js';
+import { FpaClassification } from '../../types.js';
+import {
+  Binary,
+  HelpCircle,
+  Sliders,
+  ChevronDown,
+  ChevronUp,
   AlertTriangle,
   Flame,
   Briefcase,
@@ -17,12 +17,12 @@ import {
   RefreshCw,
   FileCheck
 } from 'lucide-react';
-import { SaudiRiyalIcon } from '../icons/SaudiRiyalIcon';
+import { SaudiRiyalIcon } from '../icons/SaudiRiyalIcon.js';
 
 export default function FpaTab() {
   const { currentProject, setProjectScope, saveGscRating } = useProject();
   const { isViewer } = useAuth();
-  
+
   const [activeSubTab, setActiveSubTab] = useState<'data' | 'transactions' | 'gsc'>('data');
   const [overrideModalStory, setOverrideModalStory] = useState<any | null>(null);
   const [overrideReason, setOverrideReason] = useState('');
@@ -137,7 +137,7 @@ export default function FpaTab() {
           if (c.story_id === overrideModalStory.id && c.model_type === 'fpa') {
             const cls = { ...c.classification as FpaClassification };
             cls.complexity = overrideValue as any;
-            cls.unadjustedFP = cls.functionType === 'ILF' 
+            cls.unadjustedFP = cls.functionType === 'ILF'
               ? (overrideValue === 'Low' ? 7 : overrideValue === 'Average' ? 10 : 15)
               : (overrideValue === 'Low' ? 3 : overrideValue === 'Average' ? 4 : 6); // simple standard fallback rates mapped
             return { ...c, classification: cls };
@@ -192,7 +192,7 @@ export default function FpaTab() {
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
-      
+
       {/* Estimation Card strip */}
       <div id="fpa-cost-cards-strip" className="grid grid-cols-1 md:grid-cols-3 gap-4 font-sans">
         <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex items-center gap-3">
@@ -235,9 +235,8 @@ export default function FpaTab() {
           <button
             id="fpatab-btn-data"
             onClick={() => setActiveSubTab('data')}
-            className={`flex items-center gap-2 px-5 py-3.5 font-semibold border-r border-slate-200 transition-colors cursor-pointer ${
-              activeSubTab === 'data' ? 'bg-white text-teal-600 border-t-2 border-t-teal-600' : 'text-slate-500 hover:text-slate-900'
-            }`}
+            className={`flex items-center gap-2 px-5 py-3.5 font-semibold border-r border-slate-200 transition-colors cursor-pointer ${activeSubTab === 'data' ? 'bg-white text-teal-600 border-t-2 border-t-teal-600' : 'text-slate-500 hover:text-slate-900'
+              }`}
           >
             <span>Data Functions (ILF / EIF)</span>
             <span className="bg-slate-200 text-slate-650 px-1.5 py-0.2 rounded-full text-[10px]">{dataStories.length}</span>
@@ -246,9 +245,8 @@ export default function FpaTab() {
           <button
             id="fpatab-btn-trans"
             onClick={() => setActiveSubTab('transactions')}
-            className={`flex items-center gap-2 px-5 py-3.5 font-semibold border-r border-slate-200 transition-colors cursor-pointer ${
-              activeSubTab === 'transactions' ? 'bg-white text-teal-600 border-t-2 border-t-teal-600' : 'text-slate-500 hover:text-slate-900'
-            }`}
+            className={`flex items-center gap-2 px-5 py-3.5 font-semibold border-r border-slate-200 transition-colors cursor-pointer ${activeSubTab === 'transactions' ? 'bg-white text-teal-600 border-t-2 border-t-teal-600' : 'text-slate-500 hover:text-slate-900'
+              }`}
           >
             <span>Transactional Functions (EI / EO / EQ)</span>
             <span className="bg-slate-200 text-slate-650 px-1.5 py-0.2 rounded-full text-[10px]">{transactionStories.length}</span>
@@ -257,9 +255,8 @@ export default function FpaTab() {
           <button
             id="fpatab-btn-gsc"
             onClick={() => setActiveSubTab('gsc')}
-            className={`flex items-center gap-2 px-5 py-3.5 font-semibold border-r border-slate-200 transition-colors cursor-pointer ${
-              activeSubTab === 'gsc' ? 'bg-white text-teal-600 border-t-2 border-t-teal-600' : 'text-slate-500 hover:text-slate-900'
-            }`}
+            className={`flex items-center gap-2 px-5 py-3.5 font-semibold border-r border-slate-200 transition-colors cursor-pointer ${activeSubTab === 'gsc' ? 'bg-white text-teal-600 border-t-2 border-t-teal-600' : 'text-slate-500 hover:text-slate-900'
+              }`}
           >
             <Sliders className="w-4 h-4 text-teal-600" />
             <span>Value Adjustment Factors (14 GSCs)</span>
@@ -267,7 +264,7 @@ export default function FpaTab() {
         </div>
 
         <div className="p-4">
-          
+
           {/* Sub-tab A - Data Functions */}
           {activeSubTab === 'data' && (
             <div className="overflow-x-auto w-full">
@@ -322,13 +319,12 @@ export default function FpaTab() {
                             />
                           </td>
                           <td className="py-3 px-3">
-                            <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                              fpa.complexity === 'High' 
-                                ? 'bg-rose-100 text-rose-800' 
-                                : fpa.complexity === 'Average' 
-                                  ? 'bg-amber-100 text-amber-800' 
+                            <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${fpa.complexity === 'High'
+                                ? 'bg-rose-100 text-rose-800'
+                                : fpa.complexity === 'Average'
+                                  ? 'bg-amber-100 text-amber-800'
                                   : 'bg-emerald-100 text-emerald-800'
-                            }`}>
+                              }`}>
                               {fpa.complexity}
                             </span>
                           </td>
@@ -337,7 +333,7 @@ export default function FpaTab() {
                               const provider = classif?.ai_provider || '';
                               let badgeLabel = 'Heuristic';
                               let badgeColors = 'bg-slate-50 text-slate-500 border-slate-200';
-                              
+
                               if (story.ai_status === 'overridden') {
                                 badgeLabel = '👤 Override';
                                 badgeColors = 'bg-indigo-50 text-indigo-700 border border-indigo-150';
@@ -440,13 +436,12 @@ export default function FpaTab() {
                             />
                           </td>
                           <td className="py-3 px-3">
-                            <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                              fpa.complexity === 'High' 
-                                ? 'bg-rose-100 text-rose-800' 
-                                : fpa.complexity === 'Average' 
-                                  ? 'bg-amber-100 text-amber-800' 
+                            <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${fpa.complexity === 'High'
+                                ? 'bg-rose-100 text-rose-800'
+                                : fpa.complexity === 'Average'
+                                  ? 'bg-amber-100 text-amber-800'
                                   : 'bg-emerald-100 text-emerald-800'
-                            }`}>
+                              }`}>
                               {fpa.complexity}
                             </span>
                           </td>
@@ -455,7 +450,7 @@ export default function FpaTab() {
                               const provider = classif?.ai_provider || '';
                               let badgeLabel = 'Heuristic';
                               let badgeColors = 'bg-slate-50 text-slate-505 border-slate-205';
-                              
+
                               if (story.ai_status === 'overridden') {
                                 badgeLabel = '👤 Override';
                                 badgeColors = 'bg-indigo-50 text-indigo-700 border border-indigo-150';
@@ -565,7 +560,7 @@ export default function FpaTab() {
             </div>
             <div className="p-6 space-y-4 text-xs font-sans">
               <p className="text-slate-450 text-[11px] leading-tight">Manually modify the architectural evaluation weights. Overrides require a comprehensive explanation in the audit log.</p>
-              
+
               <div className="space-y-1">
                 <label className="text-[10px] font-mono uppercase block font-bold text-slate-450">Override Complexity Rating</label>
                 <select

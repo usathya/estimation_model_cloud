@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useProject } from '../../context/ProjectContext';
+import { useProject } from '../../context/ProjectContext.js';
 import { X, PlusCircle, Sparkles, Loader2, DollarSign } from 'lucide-react';
 
 interface CreateProjectModalProps {
@@ -63,10 +63,10 @@ export default function CreateProjectModal({ onClose, onSuccess }: CreateProject
               <p className="font-sans text-[11px] text-slate-400">Initialize a new multi-model estimation schema.</p>
             </div>
           </div>
-          <button 
+          <button
             id="create-modal-close-btn"
             type="button"
-            onClick={onClose} 
+            onClick={onClose}
             className="text-slate-450 hover:text-slate-600 transition"
           >
             <X className="w-5 h-5" />

@@ -1,15 +1,15 @@
 import React from 'react';
-import { useProject } from '../../context/ProjectContext';
-import { useAuth } from '../../context/AuthContext';
-import { calculateFpaTotalMetrics, calculateCosmicTotalMetrics, calculateHybridTotalMetrics, calculateOverheadImpacts } from '../../lib/engines';
+import { useProject } from '../../context/ProjectContext.js';
+import { useAuth } from '../../context/AuthContext.js';
+import { calculateFpaTotalMetrics, calculateCosmicTotalMetrics, calculateHybridTotalMetrics, calculateOverheadImpacts } from '../../lib/engines.js';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-import { 
-  FileDown, 
-  BarChart4, 
-  TableProperties, 
-  FileText, 
+import * as XLSX from 'xlsx/xlsx.mjs';
+import {
+  FileDown,
+  BarChart4,
+  TableProperties,
+  FileText,
   Sparkles,
   HelpCircle,
   Coins,
@@ -19,7 +19,7 @@ import {
   Calendar,
   AlertCircle
 } from 'lucide-react';
-import { SaudiRiyalIcon } from '../icons/SaudiRiyalIcon';
+import { SaudiRiyalIcon } from '../icons/SaudiRiyalIcon.js';
 
 export default function ComparativeDashboard() {
   const { currentProject } = useProject();
@@ -190,7 +190,7 @@ export default function ComparativeDashboard() {
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
-      
+
       {/* Dynamic Exports and actions panel */}
       <div className="flex flex-wrap items-center justify-between border-b border-slate-200 pb-4 gap-4">
         <div>
@@ -221,7 +221,7 @@ export default function ComparativeDashboard() {
 
       {/* Side by side CSS/HTML dynamic bar charts container (FPA vs COSMIC vs Hybrid comparison) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
+
         {/* Cost Budgets Chart card */}
         <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-xs flex flex-col justify-between">
           <div>

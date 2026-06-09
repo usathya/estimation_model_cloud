@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { useProject } from '../../context/ProjectContext';
-import { useAuth } from '../../context/AuthContext';
-import { calculateCosmicTotalMetrics, calculateFpaTotalMetrics, calculateOverheadImpacts } from '../../lib/engines';
-import { 
-  Orbit, 
-  HelpCircle, 
-  Plus, 
-  Trash2, 
-  ChevronDown, 
-  ChevronUp, 
+import { useProject } from '../../context/ProjectContext.js';
+import { useAuth } from '../../context/AuthContext.js';
+import { calculateCosmicTotalMetrics, calculateFpaTotalMetrics, calculateOverheadImpacts } from '../../lib/engines.js';
+import {
+  Orbit,
+  HelpCircle,
+  Plus,
+  Trash2,
+  ChevronDown,
+  ChevronUp,
   AlertCircle,
   Sparkles,
   BarChart2,
@@ -17,7 +17,7 @@ import {
   FileCheck2,
   Layers
 } from 'lucide-react';
-import { SaudiRiyalIcon } from '../icons/SaudiRiyalIcon';
+import { SaudiRiyalIcon } from '../icons/SaudiRiyalIcon.js';
 
 export default function CosmicTab() {
   const { currentProject, setProjectScope } = useProject();
@@ -39,7 +39,7 @@ export default function CosmicTab() {
 
   // Calculations
   const metrics = calculateCosmicTotalMetrics(currentProject.stories, currentProject.movements);
-  
+
   if (!currentProject.project) {
     return (
       <div className="max-w-2xl mx-auto p-8 my-10 bg-white border border-slate-200 rounded-xl shadow-xs text-center select-none animate-fade-in font-sans">
@@ -70,7 +70,7 @@ export default function CosmicTab() {
   // Handlers to insert/delete movements
   const handleAddMovement = async (storyId: string) => {
     if (!newMovementName.trim() || isViewer) return;
-    
+
     const payload = {
       story_id: storyId,
       name: newMovementName,
@@ -222,7 +222,7 @@ export default function CosmicTab() {
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
-      
+
       {/* Estimation metrics header */}
       <div id="cosmic-cost-metric-grid" className="grid grid-cols-1 md:grid-cols-3 gap-4 font-sans">
         <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex items-center gap-3">
@@ -384,7 +384,7 @@ export default function CosmicTab() {
             const provider = cosmicClassif?.ai_provider || '';
             let providerLabel = 'Heuristic';
             let providerColors = 'bg-slate-50 text-slate-500 border-slate-200';
-            
+
             if (story.ai_status === 'overridden') {
               providerLabel = '👤 Override';
               providerColors = 'bg-indigo-50 text-indigo-700 border border-indigo-150';
@@ -416,13 +416,13 @@ export default function CosmicTab() {
             })();
 
             return (
-              <div 
-                key={story.id} 
+              <div
+                key={story.id}
                 id={`cosmic-card-${story.id}`}
                 className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden"
               >
                 {/* Header card summary */}
-                <div 
+                <div
                   onClick={() => setExpandedStoryId(isExpanded ? null : story.id)}
                   className="px-6 py-4 flex hover:bg-slate-50/50 justify-between items-center flex-wrap gap-4 cursor-pointer select-none transition"
                 >
@@ -455,7 +455,7 @@ export default function CosmicTab() {
                 {/* Expanded content */}
                 {isExpanded && (
                   <div className="px-6 pb-6 pt-2 border-t border-slate-100 space-y-4 animate-fade-in text-xs font-sans text-slate-600">
-                    
+
                     {/* Movements listing table */}
                     <div className="overflow-x-auto">
                       <table className="w-full text-xs text-slate-650 text-left">

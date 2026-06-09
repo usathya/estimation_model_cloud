@@ -1,15 +1,15 @@
 import React from 'react';
-import { useAuth } from '../../context/AuthContext';
-import { useProject } from '../../context/ProjectContext';
-import { 
-  FolderGit2, 
-  FileText, 
-  Binary, 
-  Orbit, 
-  Layers, 
-  Percent, 
-  LayoutDashboard, 
-  ShieldAlert, 
+import { useAuth } from '../../context/AuthContext.js';
+import { useProject } from '../../context/ProjectContext.js';
+import {
+  FolderGit2,
+  FileText,
+  Binary,
+  Orbit,
+  Layers,
+  Percent,
+  LayoutDashboard,
+  ShieldAlert,
   ShieldCheck,
   LogOut,
   Sparkles,
@@ -30,7 +30,7 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, onClose }: Si
 
   const totalStories = currentProject.stories.length;
   const classifiedCount = currentProject.stories.filter(s => s.ai_status === 'classified' || s.ai_status === 'overridden').length;
-  
+
   // Status check helper values
   const stepStatus = {
     proposals: 'green',
@@ -56,11 +56,10 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, onClose }: Si
   ];
 
   return (
-    <div 
-      id="app-sidebar" 
-      className={`fixed md:static inset-y-0 left-0 w-64 bg-slate-50 text-slate-800 flex flex-col h-screen border-r border-slate-200 z-40 transition-transform duration-200 md:translate-x-0 ${
-        isOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}
+    <div
+      id="app-sidebar"
+      className={`fixed md:static inset-y-0 left-0 w-64 bg-slate-50 text-slate-800 flex flex-col h-screen border-r border-slate-200 z-40 transition-transform duration-200 md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
     >
       {/* Brand Logo header matching the SPEC-CLOUD design spacing */}
       <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-white h-14 shrink-0">
@@ -107,17 +106,16 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, onClose }: Si
                 setActiveTab(item.id);
                 onClose();
               }}
-              className={`w-full flex items-center justify-between px-3.5 py-2 rounded text-xs font-semibold transition-all outline-none border ${
-                isActive 
-                  ? 'bg-indigo-50 border-indigo-200 text-indigo-700 shadow-xs' 
+              className={`w-full flex items-center justify-between px-3.5 py-2 rounded text-xs font-semibold transition-all outline-none border ${isActive
+                  ? 'bg-indigo-50 border-indigo-200 text-indigo-700 shadow-xs'
                   : 'text-slate-600 border-transparent hover:bg-slate-100/70 hover:text-slate-950'
-              }`}
+                }`}
             >
               <div className="flex items-center gap-2.5">
                 <Icon className={`w-3.7 h-3.7 ${isActive ? 'text-indigo-600' : 'text-slate-500'}`} />
                 <span>{item.name}</span>
               </div>
-              
+
               {/* Responsive status pill indicators */}
               <div className="flex items-center">
                 {item.status === 'green' && (
@@ -144,11 +142,10 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, onClose }: Si
                 setActiveTab('settings');
                 onClose();
               }}
-              className={`w-full flex items-center gap-2.5 px-3.5 py-2 rounded text-xs font-semibold transition-all outline-none border ${
-                activeTab === 'settings' 
-                  ? 'bg-rose-50 border-rose-200 text-rose-700 shadow-xs' 
+              className={`w-full flex items-center gap-2.5 px-3.5 py-2 rounded text-xs font-semibold transition-all outline-none border ${activeTab === 'settings'
+                  ? 'bg-rose-50 border-rose-200 text-rose-700 shadow-xs'
                   : 'text-slate-600 border-transparent hover:bg-rose-50/50 hover:text-rose-700'
-              }`}
+                }`}
             >
               <ShieldAlert className="w-3.7 h-3.7 text-rose-500" />
               <span>Admin Panel Settings</span>
@@ -167,11 +164,10 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, onClose }: Si
               onClick={async () => {
                 await updateProfile({ role: r as any });
               }}
-              className={`px-1 py-1 rounded text-[8px] font-mono uppercase font-black text-center border transition-all ${
-                profile?.role === r 
-                  ? 'bg-indigo-50 text-indigo-700 border-indigo-200' 
+              className={`px-1 py-1 rounded text-[8px] font-mono uppercase font-black text-center border transition-all ${profile?.role === r
+                  ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
                   : 'bg-slate-50 text-slate-400 border-slate-200 hover:text-slate-600'
-              }`}
+                }`}
             >
               {r}
             </button>
@@ -181,7 +177,7 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, onClose }: Si
 
       {/* Sign Out Action at bottom */}
       <div className="p-3 border-t border-slate-200 bg-white">
-        <button 
+        <button
           onClick={signOut}
           className="w-full flex items-center gap-2.5 px-3.5 py-1.5 rounded text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors"
         >

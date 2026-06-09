@@ -1,4 +1,4 @@
-import { Project, UserStory, AiClassification, CosmicMovement, HybridCriterion, HybridScore, Overhead, FpaGscRating, CostConfig, FpaClassification } from '../types';
+import { Project, UserStory, AiClassification, CosmicMovement, HybridCriterion, HybridScore, Overhead, FpaGscRating, CostConfig, FpaClassification } from '../types.js';
 
 // --- FPA ENGINE ---
 export function calculateFpaComplexityAndPoints(type: string, rets: number, dets: number, ftrs: number): { complexity: 'Low' | 'Average' | 'High'; fp: number } {
@@ -160,7 +160,7 @@ export function calculateStoryPointsFromUserStory(s: UserStory): number {
   const benefit = (s.benefit || '').toLowerCase();
   const tags = (s.tags || '').toLowerCase();
   const role = (s.role || '').toLowerCase();
-  
+
   let score = 1; // base score
 
   // 1. Integration or API connectivity
@@ -245,13 +245,13 @@ export function calculateHybridScoreForStory(storyId: string, criteria: HybridCr
 export function calculateHybridTotalMetrics(stories: UserStory[], criteria: HybridCriterion[], scores: HybridScore[], overheads: any = null) {
   let totalBaseHybridPoints = 0;
   const storyScores: { [key: string]: number } = {};
-  
+
   const breakdown = stories.map(s => {
     const { weightedScore, complexity } = calculateHybridScoreForStory(s.id, criteria, scores);
-    
+
     // Use saved story_points (from Fibonacci series) or calculate independently based on the user story
     const pts = s.story_points !== undefined && s.story_points !== null ? Number(s.story_points) : calculateStoryPointsFromUserStory(s);
-    
+
     totalBaseHybridPoints += pts;
     storyScores[s.id] = pts;
     return {
@@ -265,7 +265,7 @@ export function calculateHybridTotalMetrics(stories: UserStory[], criteria: Hybr
   });
 
   const normalisedPoints = totalBaseHybridPoints;
-  
+
   // Calculate overheads
   const list = Array.isArray(overheads) ? overheads : [];
   const activeOverheads = list.filter(oh => oh.is_active);
@@ -316,11 +316,11 @@ export function calculateOverheadImpacts(overheads: Overhead[], fpaBasePoints: n
     const cosmicApplies = oh.applies_to?.cosmic ?? true;
     const hybridApplies = oh.applies_to?.hybrid ?? true;
 
-    const fpaImpact = fpaApplies 
+    const fpaImpact = fpaApplies
       ? (oh.method === 'percentage' ? fpaBasePoints * (oh.value / 100) : oh.value)
       : 0;
 
-    const cosmicImpact = cosmicApplies 
+    const cosmicImpact = cosmicApplies
       ? (oh.method === 'percentage' ? cosmicBasePoints * (oh.value / 100) : oh.value)
       : 0;
 

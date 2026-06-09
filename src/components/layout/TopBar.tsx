@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useProject } from '../../context/ProjectContext';
-import { useAuth } from '../../context/AuthContext';
-import { 
-  PlusCircle, 
-  FolderOpen, 
-  Save, 
-  Users, 
-  Cpu, 
-  CheckCircle2, 
+import { useProject } from '../../context/ProjectContext.js';
+import { useAuth } from '../../context/AuthContext.js';
+import {
+  PlusCircle,
+  FolderOpen,
+  Save,
+  Users,
+  Cpu,
+  CheckCircle2,
   Edit3,
   Menu
 } from 'lucide-react';
@@ -101,7 +101,7 @@ export default function TopBar({ onNewProject, onLoadProject, onToggleSidebar }:
               />
             ) : (
               <div className="flex items-center gap-2 truncate">
-                <span 
+                <span
                   id="header-project-name-display"
                   onClick={() => !isViewer && setIsEditingName(true)}
                   className={`font-sans font-semibold text-xs text-slate-900 truncate tracking-tight ${!isViewer ? 'cursor-pointer hover:bg-slate-50 hover:text-indigo-600 rounded px-1' : ''}`}
@@ -112,7 +112,7 @@ export default function TopBar({ onNewProject, onLoadProject, onToggleSidebar }:
                 {!isViewer && <Edit3 className="w-3.2 h-3.2 text-slate-400 cursor-pointer" onClick={() => setIsEditingName(true)} />}
               </div>
             )}
-            
+
             <div className="h-4 w-px bg-slate-200" />
             <span className="text-[9px] font-mono text-slate-400 tracking-wider">
               REVISION SYNC: {formatEditDate(currentProject.project.updated_at)}
@@ -139,15 +139,14 @@ export default function TopBar({ onNewProject, onLoadProject, onToggleSidebar }:
           <Cpu className="w-3 h-3 text-indigo-500" />
           <div className="text-left">
             <span className="text-[8px] font-mono text-slate-400 block leading-none font-bold uppercase">AI ORBIT</span>
-            <span 
+            <span
               id="ai-provider-badge"
-              className={`text-[9px] uppercase font-black tracking-widest leading-none ${
-                activeAiProvider === 'gemini' 
-                  ? 'text-indigo-605' 
-                  : activeAiProvider === 'groq' 
-                    ? 'text-sky-600' 
+              className={`text-[9px] uppercase font-black tracking-widest leading-none ${activeAiProvider === 'gemini'
+                  ? 'text-indigo-605'
+                  : activeAiProvider === 'groq'
+                    ? 'text-sky-600'
                     : 'text-green-605'
-              }`}
+                }`}
             >
               {activeAiProvider} CORE
             </span>
@@ -181,7 +180,7 @@ export default function TopBar({ onNewProject, onLoadProject, onToggleSidebar }:
               <span>New</span>
             </button>
           )}
-          
+
           <button
             id="bar-btn-load"
             onClick={onLoadProject}

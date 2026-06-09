@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useProject } from '../../context/ProjectContext';
-import { useAuth } from '../../context/AuthContext';
-import { Project } from '../../types';
-import { 
-  X, 
-  FolderOpen, 
-  Trash2, 
-  Copy, 
-  Plus, 
-  Loader2 
+import { useProject } from '../../context/ProjectContext.js';
+import { useAuth } from '../../context/AuthContext.js';
+import { Project } from '../../types.js';
+import {
+  X,
+  FolderOpen,
+  Trash2,
+  Copy,
+  Plus,
+  Loader2
 } from 'lucide-react';
 
 interface LoadProjectModalProps {
@@ -56,9 +56,9 @@ export default function LoadProjectModal({ onClose, onNewProjectOpen }: LoadProj
               <p className="font-sans text-[11px] text-slate-400">Load historic project records or trigger duplicates.</p>
             </div>
           </div>
-          <button 
+          <button
             id="load-modal-close-btn"
-            onClick={onClose} 
+            onClick={onClose}
             className="text-slate-450 hover:text-slate-600 transition"
           >
             <X className="w-5 h-5" />
@@ -106,13 +106,12 @@ export default function LoadProjectModal({ onClose, onNewProjectOpen }: LoadProj
                         </span>
                       </td>
                       <td className="py-3 px-3">
-                        <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                          proj.status === 'Approved' 
-                            ? 'bg-emerald-100 text-emerald-800' 
-                            : proj.status === 'Under Review' 
-                              ? 'bg-amber-100 text-amber-800' 
+                        <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full ${proj.status === 'Approved'
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : proj.status === 'Under Review'
+                              ? 'bg-amber-100 text-amber-800'
                               : 'bg-slate-100 text-slate-600'
-                        }`}>
+                          }`}>
                           {proj.status}
                         </span>
                       </td>

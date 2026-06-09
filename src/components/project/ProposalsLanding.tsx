@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { useProject } from '../../context/ProjectContext';
-import { useAuth } from '../../context/AuthContext';
-import { Project } from '../../types';
-import { 
-  FolderGit2, 
-  PlusCircle, 
-  Edit3, 
-  Copy, 
-  Trash2, 
-  Sparkles, 
-  Binary, 
-  Orbit, 
-  Layers, 
-  ArrowRight, 
-  Calendar, 
-  User, 
-  Briefcase, 
-  DollarSign, 
-  Users, 
-  Settings, 
-  Check, 
+import { useProject } from '../../context/ProjectContext.js';
+import { useAuth } from '../../context/AuthContext.js';
+import { Project } from '../../types.js';
+import {
+  FolderGit2,
+  PlusCircle,
+  Edit3,
+  Copy,
+  Trash2,
+  Sparkles,
+  Binary,
+  Orbit,
+  Layers,
+  ArrowRight,
+  Calendar,
+  User,
+  Briefcase,
+  DollarSign,
+  Users,
+  Settings,
+  Check,
   X,
   FileSpreadsheet,
   Workflow,
@@ -33,17 +33,17 @@ interface ProposalsLandingProps {
 }
 
 export default function ProposalsLanding({ onSelectTab, onOpenCreateModal }: ProposalsLandingProps) {
-  const { 
-    projects, 
+  const {
+    projects,
     isLoadingProjects,
-    refreshProjects, 
-    loadProject, 
-    duplicateProject, 
+    refreshProjects,
+    loadProject,
+    duplicateProject,
     deleteProject,
     currentProject,
     saveProject
   } = useProject();
-  
+
   const { isAdmin, isViewer } = useAuth();
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [loadingProjectId, setLoadingProjectId] = useState<string | null>(null);
@@ -86,7 +86,7 @@ export default function ProposalsLanding({ onSelectTab, onOpenCreateModal }: Pro
 
   const handleSaveInlineEdit = async (projId: string) => {
     if (!editName.trim()) return;
-    
+
     // If the edited project is currently active, we can save via the saveProject action or direct API.
     // To be absolutely robust, let's call the API to save, then refresh.
     try {
@@ -134,13 +134,13 @@ export default function ProposalsLanding({ onSelectTab, onOpenCreateModal }: Pro
   const totalCount = projects.length;
   const approvedCount = projects.filter(p => p.status === 'Approved').length;
   const underReviewCount = projects.filter(p => p.status === 'Under Review').length;
-  const avgStories = totalCount > 0 
-    ? Math.round(projects.reduce((acc, p) => acc + (p.story_count || 0), 0) / totalCount * 10) / 10 
+  const avgStories = totalCount > 0
+    ? Math.round(projects.reduce((acc, p) => acc + (p.story_count || 0), 0) / totalCount * 10) / 10
     : 0;
 
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-8 font-sans">
-      
+
       {/* Header Canvas banner */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white border border-slate-200 p-6 rounded-2xl shadow-xs">
         <div>
@@ -272,13 +272,12 @@ export default function ProposalsLanding({ onSelectTab, onOpenCreateModal }: Pro
             const isLoadingThis = loadingProjectId === proj.id;
 
             return (
-              <div 
-                key={proj.id} 
-                className={`bg-white border rounded-2xl shadow-3xs overflow-hidden transition-all duration-200 ${
-                  isActive 
-                    ? 'border-indigo-400 ring-2 ring-indigo-50/50' 
+              <div
+                key={proj.id}
+                className={`bg-white border rounded-2xl shadow-3xs overflow-hidden transition-all duration-200 ${isActive
+                    ? 'border-indigo-400 ring-2 ring-indigo-50/50'
                     : 'border-slate-200 hover:border-slate-350 hover:shadow-sm'
-                }`}
+                  }`}
               >
                 {/* Proposal Header Banner: Name and basic parameters */}
                 <div className="p-5 border-b border-slate-100 bg-slate-50/40">
@@ -396,7 +395,7 @@ export default function ProposalsLanding({ onSelectTab, onOpenCreateModal }: Pro
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 flex-wrap">
                           <h3 className="font-extrabold text-slate-900 text-sm">{proj.name}</h3>
-                          
+
                           {/* Active Label */}
                           {isActive && (
                             <span className="bg-indigo-600 text-white text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider">
@@ -404,13 +403,12 @@ export default function ProposalsLanding({ onSelectTab, onOpenCreateModal }: Pro
                             </span>
                           )}
 
-                          <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
-                            proj.status === 'Approved' 
-                              ? 'bg-green-100 text-green-800' 
-                              : proj.status === 'Under Review' 
-                                ? 'bg-amber-100 text-amber-800' 
+                          <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${proj.status === 'Approved'
+                              ? 'bg-green-100 text-green-800'
+                              : proj.status === 'Under Review'
+                                ? 'bg-amber-100 text-amber-800'
                                 : 'bg-slate-100 text-slate-600'
-                          }`}>
+                            }`}>
                             {proj.status}
                           </span>
                         </div>
@@ -485,7 +483,7 @@ export default function ProposalsLanding({ onSelectTab, onOpenCreateModal }: Pro
 
                 {/* Estimation sizing dashboards for each model */}
                 <div className="p-5 grid grid-cols-1 md:grid-cols-4 gap-4 bg-white">
-                  
+
                   {/* Left segment stats */}
                   <div className="space-y-2 border-r border-slate-100 pr-4 flex flex-col justify-center">
                     <span className="text-[10px] font-mono font-bold text-slate-400 block uppercase tracking-wider">Backlog Profile</span>
@@ -532,7 +530,7 @@ export default function ProposalsLanding({ onSelectTab, onOpenCreateModal }: Pro
                         <span className="text-xs text-slate-500 font-bold font-sans">AFP</span>
                       </div>
                     </div>
-                    <button 
+                    <button
                       onClick={() => handleOpenProject(proj.id, 'fpa')}
                       className="text-[10px] font-bold text-indigo-650 hover:text-indigo-800 flex items-center gap-0.5 justify-end"
                     >
@@ -568,7 +566,7 @@ export default function ProposalsLanding({ onSelectTab, onOpenCreateModal }: Pro
                         <span className="text-xs text-slate-500 font-bold font-sans">CFP</span>
                       </div>
                     </div>
-                    <button 
+                    <button
                       onClick={() => handleOpenProject(proj.id, 'cosmic')}
                       className="text-[10px] font-bold text-teal-600 hover:text-teal-850 flex items-center gap-0.5 justify-end"
                     >
@@ -604,7 +602,7 @@ export default function ProposalsLanding({ onSelectTab, onOpenCreateModal }: Pro
                         <span className="text-xs text-slate-500 font-bold font-sans">HFP</span>
                       </div>
                     </div>
-                    <button 
+                    <button
                       onClick={() => handleOpenProject(proj.id, 'hybrid')}
                       className="text-[10px] font-bold text-violet-700 hover:text-violet-850 flex items-center gap-0.5 justify-end"
                     >

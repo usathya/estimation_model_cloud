@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Project, UserStory, AiClassification, AiOverride, CosmicMovement, HybridCriterion, HybridScore, Overhead, FpaGscRating, CostConfig } from '../types';
+import { Project, UserStory, AiClassification, AiOverride, CosmicMovement, HybridCriterion, HybridScore, Overhead, FpaGscRating, CostConfig } from '../types.js';
 
 interface ProjectScopeData {
   project: Project | null;

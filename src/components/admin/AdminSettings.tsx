@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useProject } from '../../context/ProjectContext';
-import { useAuth } from '../../context/AuthContext';
-import { 
-  ShieldAlert, 
-  HelpCircle, 
-  Settings, 
-  UserPlus, 
-  AlertTriangle, 
-  RefreshCw, 
+import { useProject } from '../../context/ProjectContext.js';
+import { useAuth } from '../../context/AuthContext.js';
+import {
+  ShieldAlert,
+  HelpCircle,
+  Settings,
+  UserPlus,
+  AlertTriangle,
+  RefreshCw,
   Activity,
   CheckCircle,
   Database,
@@ -25,7 +25,7 @@ export default function AdminSettings() {
   const [geminiModel, setGeminiModel] = useState('gemini-2.5-flash');
   const [groqKey, setGroqKey] = useState('');
   const [cfWorkersUrl, setCfWorkersUrl] = useState('');
-  
+
   // Overheads States
   const [ohPm, setOhPm] = useState(10);
   const [ohBa, setOhBa] = useState(15);
@@ -35,7 +35,7 @@ export default function AdminSettings() {
   const [ohUat, setOhUat] = useState(10);
   const [ohDeployment, setOhDeployment] = useState(5);
   const [ohRisk, setOhRisk] = useState(10);
-  
+
   // Audits and Simulations states
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -238,7 +238,7 @@ export default function AdminSettings() {
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
-      
+
       {/* Simulation Workspace Conflict Toast (Prompt 10 requirements details) */}
       {showSimMismatch && (
         <div id="simulated-conflict-toast" className="bg-rose-55 border-l-4 border-rose-600 p-5 rounded-xl text-xs font-sans text-rose-950 flex flex-col md:flex-row items-start justify-between gap-4 shadow-xl animate-bounce-short">
@@ -392,7 +392,7 @@ export default function AdminSettings() {
               <History className="w-4.5 h-4.5 text-slate-650" />
               <h4 className="font-sans font-extrabold text-xs text-slate-850 tracking-tight">Project revision Audit Trail</h4>
             </div>
-            
+
             <button
               id="admin-btn-refresh-audits"
               onClick={loadAudits}
@@ -636,7 +636,7 @@ export default function AdminSettings() {
                 <div className="flex items-center gap-1.5">
                   <span className={`w-2.5 h-2.5 rounded-full ${supabaseStatus.active ? 'bg-emerald-500' : 'bg-amber-400 animate-pulse'}`} />
                   <span className="font-semibold text-slate-750">
-                    {supabaseStatus.active 
+                    {supabaseStatus.active
                       ? (supabaseStatus.isConfigCompleted ? 'Active Service Integration' : 'Partially Configured')
                       : 'Inactive / Fallback Local JSON DB Mode'
                     }
@@ -669,11 +669,10 @@ export default function AdminSettings() {
                   {Object.entries(supabaseStatus.results || {}).map(([key, val]: any) => (
                     <div key={key} className="border border-slate-150 p-2.5 rounded-lg bg-slate-50/55 flex flex-col justify-between gap-1.5 shadow-xs">
                       <span className="text-[10px] font-mono font-semibold text-slate-755 truncate" title={key}>{key}</span>
-                      <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold self-start ${
-                        val === 'ACTIVE' ? 'bg-emerald-50 text-emerald-750 border border-emerald-200' :
-                        val === 'ERROR' ? 'bg-rose-50 text-rose-750 border border-rose-200 animate-pulse' :
-                        'bg-slate-100 text-slate-500 border border-slate-150'
-                      }`}>
+                      <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold self-start ${val === 'ACTIVE' ? 'bg-emerald-50 text-emerald-750 border border-emerald-200' :
+                          val === 'ERROR' ? 'bg-rose-50 text-rose-750 border border-rose-200 animate-pulse' :
+                            'bg-slate-100 text-slate-500 border border-slate-150'
+                        }`}>
                         {val}
                       </span>
                     </div>
@@ -700,7 +699,7 @@ export default function AdminSettings() {
                     <li>Ensure <code>SUPABASE_SERVICE_ROLE_KEY</code> in environment variables is the exact superuser secret (Admin Service Role Key) to bypass all RLS by default!</li>
                   </ul>
                 </div>
-                
+
                 <div className="border-t border-slate-200 pt-2 space-y-1.5 text-xs">
                   <span className="font-semibold text-emerald-700 block">🔑 Resolving "Violates Foreign Key Constraint" Seeding Logs:</span>
                   <p className="text-slate-600 leading-relaxed">
