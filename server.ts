@@ -1,32 +1,41 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI, Type } from '@google/genai';
 import dotenv from 'dotenv';
-import { PDFParse } from 'pdf-parse';
+//import * as pdf from 'pdf-parse';
 import mammoth from 'mammoth';
 
 dotenv.config();
-
-// Redirect console logs to a debug file
-const logFilePath = path.join(process.cwd(), 'server-debug.log');
-fs.writeFileSync(logFilePath, `=== SERVER STARTUP AT ${new Date().toISOString()} ===\n`);
+// Redirect console logs safely based on environment capabilities
 const origLog = console.log;
 const origErr = console.error;
 const origWarn = console.warn;
-console.log = (...args) => {
-  try { fs.appendFileSync(logFilePath, `[LOG] ${args.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' ')}\n`); } catch(e){}
-  origLog(...args);
-};
-console.error = (...args) => {
-  try { fs.appendFileSync(logFilePath, `[ERR] ${args.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' ')}\n`); } catch(e){}
-  origErr(...args);
-};
-console.warn = (...args) => {
-  try { fs.appendFileSync(logFilePath, `[WARN] ${args.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' ')}\n`); } catch(e){}
-  origWarn(...args);
-};
+
+const isCloudflare = typeof fs.writeFileSync !== 'function' || process.env.NODE_ENV === "production";
+
+if (!isCloudflare) {
+  try {
+    const logFilePath = path.join(process.cwd(), 'server-debug.log');
+    fs.writeFileSync(logFilePath, `=== SERVER STARTUP AT ${new Date().toISOString()} ===\n`);
+
+    console.log = (...args) => {
+      try { fs.appendFileSync(logFilePath, `[LOG] ${args.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' ')}\n`); } catch (e) { }
+      origLog(...args);
+    };
+    console.error = (...args) => {
+      try { fs.appendFileSync(logFilePath, `[ERR] ${args.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' ')}\n`); } catch (e) { }
+      origErr(...args);
+    };
+    console.warn = (...args) => {
+      try { fs.appendFileSync(logFilePath, `[WARN] ${args.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' ')}\n`); } catch (e) { }
+      origWarn(...args);
+    };
+  } catch (fsErr) {
+    // Gracefully preserve console streaming if file locks occur locally
+  }
+}
 
 const app = express();
 app.use(express.json({ limit: '50mb' }));
@@ -36,10 +45,10 @@ const PORT = 3000;
 const DB_FILE = path.join(process.cwd(), 'db.json');
 
 // --- HELPER LOCAL DATABASE ENG & CACHED SUPABASE SYNC ---
-import { 
-  getSupabaseClient, 
-  isSupabaseActive, 
-  testSupabaseConnectionDetail, 
+import {
+  getSupabaseClient,
+  isSupabaseActive,
+  testSupabaseConnectionDetail,
   forceSyncLocalToSupabase,
   toValidUuid,
   mapUserProfileToDb,
@@ -55,67 +64,108 @@ import {
   mapCostConfigToDb,
   mapSystemConfigToDb,
   mapAiOverrideFromDb
-} from './supabase_db';
+} from './supabase_db.js';
 
 let globalDbCache: any = null;
 
 function readDbFromFile() {
+  const freshDb: any = {
+    user_profile: {
+      id: 'user-01',
+      email: 'umeshs.in@gmail.com',
+      full_name: 'Umesh Sharma',
+      organisation: 'Google Cloud Labs',
+      role: 'admin',
+      created_at: new Date().toISOString()
+    },
+    projects: [],
+    user_stories: [],
+    ai_classifications: [],
+    ai_overrides: [],
+    fpa_gsc_ratings: [],
+    cosmic_movements: [],
+    hybrid_criteria: [],
+    hybrid_scores: [],
+    overheads: [],
+    cost_configs: [],
+    estimator_feedback: [],
+    system_config: {
+      default_currency: 'SAR',
+      default_productivity_rate: 1.5,
+      default_fpa_productivity_rate: 0.75,
+      default_cosmic_productivity_rate: 1.5,
+      default_hybrid_productivity_rate: 1.5,
+      default_fpa_cost_per_point: 1875,
+      default_cosmic_cost_per_point: 1875,
+      default_hybrid_cost_per_point: 1875,
+      ai_primary_provider: 'gemini',
+      cf_ai_model: '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
+      groq_model: 'llama-3.3-70b-versatile',
+      gemini_enabled: true,
+      ai_fallback_enabled: true
+    },
+    cf_usage: [],
+    groq_usage: [],
+    gemini_usage: [],
+    ai_errors: []
+  };
+
+  // Cloudflare Intercept: If file structure operations are missing or execution context is cloud-native
+  if (typeof fs.readFileSync !== 'function' || process.env.NODE_ENV === "production") {
+    console.log('★ [CLOUDFLARE ENGINE] Serving secure structural state context via memory allocation.');
+    return globalDbCache || freshDb;
+  }
+
   if (!fs.existsSync(DB_FILE)) {
-    const freshDb = {
-      user_profile: {
-        id: 'user-01',
-        email: 'umeshs.in@gmail.com',
-        full_name: 'Umesh Sharma',
-        organisation: 'Google Cloud Labs',
-        role: 'admin',
-        created_at: new Date().toISOString()
-      },
-      projects: [],
-      user_stories: [],
-      ai_classifications: [],
-      ai_overrides: [],
-      fpa_gsc_ratings: [],
-      cosmic_movements: [],
-      hybrid_criteria: [],
-      hybrid_scores: [],
-      overheads: [],
-      cost_configs: [],
-      system_config: {
-        default_currency: 'SAR',
-        default_productivity_rate: 1.5,
-        default_fpa_productivity_rate: 0.75,
-        default_cosmic_productivity_rate: 1.5,
-        default_hybrid_productivity_rate: 1.5,
-        default_fpa_cost_per_point: 1875,
-        default_cosmic_cost_per_point: 1875,
-        default_hybrid_cost_per_point: 1875,
-        ai_primary_provider: 'gemini',
-        cf_ai_model: '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
-        groq_model: 'llama-3.3-70b-versatile',
-        gemini_enabled: true,
-        ai_fallback_enabled: true
-      },
-      cf_usage: [],
-      groq_usage: [],
-      gemini_usage: [],
-      ai_errors: []
-    };
-    fs.writeFileSync(DB_FILE, JSON.stringify(freshDb, null, 2), 'utf8');
+    try {
+      fs.writeFileSync(DB_FILE, JSON.stringify(freshDb, null, 2), 'utf8');
+    } catch (e) { }
     return freshDb;
   }
+
   try {
     const data = fs.readFileSync(DB_FILE, 'utf8');
-    return JSON.parse(data);
+    if (!data || data.trim() === '') return freshDb;
+    const parsed = JSON.parse(data);
+
+    // Strict schema confirmation checks to guarantee compatibility with express endpoint routes
+    if (!parsed.estimator_feedback) parsed.estimator_feedback = [];
+    if (!parsed.projects) parsed.projects = [];
+    if (!parsed.user_stories) parsed.user_stories = [];
+    if (!parsed.ai_classifications) parsed.ai_classifications = [];
+    if (!parsed.ai_overrides) parsed.ai_overrides = [];
+    if (!parsed.fpa_gsc_ratings) parsed.fpa_gsc_ratings = [];
+    if (!parsed.cosmic_movements) parsed.cosmic_movements = [];
+    if (!parsed.hybrid_criteria) parsed.hybrid_criteria = [];
+    if (!parsed.hybrid_scores) parsed.hybrid_scores = [];
+    if (!parsed.overheads) parsed.overheads = [];
+    if (!parsed.cost_configs) parsed.cost_configs = [];
+    if (!parsed.ai_errors) parsed.ai_errors = [];
+
+    return parsed;
   } catch (err) {
-    console.error('Error reading db.json, returning empty template', err);
-    return {
-      projects: [], user_stories: [], ai_classifications: [], ai_overrides: [], fpa_gsc_ratings: [], cosmic_movements: [], hybrid_criteria: [], hybrid_scores: [], overheads: [], cost_configs: [], ai_errors: []
-    };
+    console.error('Error reading local disk reference, falling back to clean template structure:', err);
+    return freshDb;
   }
 }
 
 function writeDbToFile(db: any) {
-  fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), 'utf8');
+  if (!db) return;
+
+  // Make sure the shared global cache state reference reflects changes instantly
+  globalDbCache = db;
+
+  // Stop file writing activities if cloud context constraints are active
+  if (typeof fs.writeFileSync !== 'function' || process.env.NODE_ENV === "production") {
+    console.log('★ [CLOUDFLARE MEMORY STORAGE] Local disk operations ignored. Global cache instance preserved.');
+    return;
+  }
+
+  try {
+    fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), 'utf8');
+  } catch (err) {
+    console.error('[LOCAL ENVIRONMENT FS WRITE WARNING]:', err);
+  }
 }
 
 // Background load system from Supabase tables
@@ -231,9 +281,9 @@ async function syncChangesToSupabase(db: any, tablesToSync?: string[]) {
         try {
           let { error } = await client.from(task.name).upsert(task.payload);
           if (error && task.name === 'user_stories') {
-            const isMissingColumn = error.message.includes('story_points') || 
-                                    error.message.includes('column') || 
-                                    error.code === '42703';
+            const isMissingColumn = error.message.includes('story_points') ||
+              error.message.includes('column') ||
+              error.code === '42703';
             if (isMissingColumn) {
               console.log('★ [SUPABASE] Retrying user_stories upsert without story_points column...');
               const strippedStories = task.payload.map(({ story_points, ...rest }: any) => rest);
@@ -242,12 +292,12 @@ async function syncChangesToSupabase(db: any, tablesToSync?: string[]) {
             }
           }
           if (error && task.name === 'cost_config') {
-            const isMissingColumn = error.message.includes('fpa_productivity_rate') || 
-                                    error.message.includes('cosmic_productivity_rate') || 
-                                    error.message.includes('hybrid_productivity_rate') || 
-                                    error.message.includes('blended_rate') || 
-                                    error.message.includes('column') || 
-                                    error.code === '42703';
+            const isMissingColumn = error.message.includes('fpa_productivity_rate') ||
+              error.message.includes('cosmic_productivity_rate') ||
+              error.message.includes('hybrid_productivity_rate') ||
+              error.message.includes('blended_rate') ||
+              error.message.includes('column') ||
+              error.code === '42703';
             if (isMissingColumn) {
               console.log('★ [SUPABASE] Retrying cost_config upsert without specific columns...');
               const strippedConfigs = task.payload.map(({ fpa_productivity_rate, cosmic_productivity_rate, hybrid_productivity_rate, blended_rate, ...rest }: any) => rest);
@@ -277,7 +327,7 @@ function readDb() {
   if (!globalDbCache.estimator_feedback) {
     globalDbCache.estimator_feedback = [];
   }
-  
+
   if (isSupabaseActive()) {
     loadDbFromSupabase();
   }
@@ -302,12 +352,7 @@ function getAi(): GoogleGenAI | null {
     const key = process.env.GEMINI_API_KEY;
     if (key && key !== 'MY_GEMINI_API_KEY') {
       aiInstance = new GoogleGenAI({
-        apiKey: key,
-        httpOptions: {
-          headers: {
-            'User-Agent': 'aistudio-build',
-          }
-        }
+        apiKey: process.env.GEMINI_API_KEY as string
       });
     }
   }
@@ -315,41 +360,65 @@ function getAi(): GoogleGenAI | null {
 }
 
 // --- ROBUST GEMINI API HELPER WITH AUTO-RETRY AND LIGHTWEIGHT FALLBACK ---
-async function generateContentWithRetry(ai: any, params: {
-  contents: any;
+async function generateContentWithRetry(ai: GoogleGenAI, params: {
+  contents: string;
   config?: any;
+  modelName?: string;
 }) {
   const maxRetries = 2; // Try up to 3 times total for the preferred model
   let delay = 1000; // Start with 1s backoff delay
   let lastError: any = null;
 
-  // Prefer gemini-3.5-flash, fallback to highly-available gemini-3.1-flash-lite on server issues
-  const modelsToTry = ['gemini-3.5-flash', 'gemini-3.1-flash-lite'];
+  // Use Gemini 1.5 models
+  const modelsToTry = [params.modelName || 'gemini-1.5-flash', 'gemini-1.5-pro'];
 
-  for (const model of modelsToTry) {
+  /*for (const modelId of modelsToTry) {
+    const model = ai.getGenerativeModel({
+      model: modelId,
+      generationConfig: params.config
+    });
+
     for (let attempt = 1; attempt <= maxRetries + 1; attempt++) {
       try {
-        console.log(`[GEMINI] Calling generateContent with model="${model}", attempt ${attempt}...`);
+        console.log(`[GEMINI] Calling generateContent with model="${modelId}", attempt ${attempt}...`);
+        const result = await model.generateContent(params.contents);
+        const response = await result.response;
+        console.log(`[GEMINI] Content generation succeeded using model="${modelId}".`);
+        return { text: response.text() };
+      } */
+  for (const modelId of modelsToTry) {
+    for (let attempt = 1; attempt <= maxRetries + 1; attempt++) {
+      try {
+        console.log(`[GEMINI] Calling generateContent with model="${modelId}", attempt ${attempt}...`);
+
+        // NEW SDK APPROACH:
+        // Pass model, contents (the prompt), and config (the schema/temp) directly
         const response = await ai.models.generateContent({
-          model,
+          model: modelId,
           contents: params.contents,
-          config: params.config
+          config: params.config // Note: the SDK uses 'config'
         });
-        console.log(`[GEMINI] Content generation succeeded using model="${model}".`);
-        return response;
+
+        const text = response.text || '';
+        if (!text) {
+          throw new Error('Response was empty or blocked by safety filters.');
+        }
+
+        console.log(`[GEMINI] Content generation succeeded using model="${modelId}".`);
+        return { text };
       } catch (err: any) {
         lastError = err;
         const errorMessage = (err.message || '').toString();
         const statusCode = err.status || '';
-        console.warn(`[GEMINI] Attempt ${attempt} failed with model="${model}":`, errorMessage, `[Status: ${statusCode}]`);
+        console.warn(`[GEMINI] Attempt ${attempt} failed with model="${modelId}":`, errorMessage, `[Status: ${statusCode}]`);
 
         const isTemporary = errorMessage.includes('503') ||
-                            errorMessage.includes('UNAVAILABLE') ||
-                            errorMessage.includes('429') ||
-                            errorMessage.includes('RESOURCE_EXHAUSTED') ||
-                            errorMessage.includes('temporary') ||
-                            errorMessage.includes('demand') ||
-                            errorMessage.includes('overloaded');
+          errorMessage.includes('UNAVAILABLE') ||
+          errorMessage.includes('429') ||
+          errorMessage.includes('RESOURCE_EXHAUSTED') ||
+          errorMessage.includes('temporary') ||
+          errorMessage.includes('demand') ||
+          errorMessage.includes('overloaded');
 
         if (isTemporary && attempt <= maxRetries) {
           console.log(`[GEMINI] Temporary issue detected. Retrying in ${delay}ms...`);
@@ -368,7 +437,7 @@ async function generateContentWithRetry(ai: any, params: {
 
 // --- API ENDPOINTS ---
 
-app.get('/api/debug-limit', (req, res) => {
+app.get('/api/debug-limit', (req: Request, res: Response) => {
   res.json({
     ok: true,
     message: "active-since-now",
@@ -377,12 +446,12 @@ app.get('/api/debug-limit', (req, res) => {
 });
 
 // Mock Session Prof
-app.get('/api/auth/profile', (req, res) => {
+app.get('/api/auth/profile', (req: Request, res: Response) => {
   const db = readDb();
   res.json(db.user_profile);
 });
 
-app.post('/api/auth/profile', (req, res) => {
+app.post('/api/auth/profile', (req: Request, res: Response) => {
   const db = readDb();
   db.user_profile = {
     ...db.user_profile,
@@ -409,9 +478,9 @@ function getStandardOverheads(projectId: string, systemConfig: any) {
 }
 
 // Projects
-app.get('/api/projects', (req, res) => {
+app.get('/api/projects', (req: Request, res: Response) => {
   const db = readDb();
-  
+
   // Enrich each project in the list with calculated specs:
   // - story_count
   // - fpa_points
@@ -420,7 +489,7 @@ app.get('/api/projects', (req, res) => {
   const enriched = db.projects.map((proj: any) => {
     const stories = db.user_stories.filter((s: any) => s.project_id === proj.id);
     const storyIds = stories.map((s: any) => s.id);
-    
+
     // 1. FPA Size
     let ufp = 0;
     const classifications = db.ai_classifications.filter((c: any) => storyIds.includes(c.story_id));
@@ -430,7 +499,7 @@ app.get('/api/projects', (req, res) => {
         ufp += (classif.classification.unadjustedFP || 0);
       }
     });
-    
+
     const ratings = db.fpa_gsc_ratings.filter((r: any) => r.project_id === proj.id);
     const ratingsMap = new Map();
     for (let i = 1; i <= 14; i++) ratingsMap.set(i, 0);
@@ -442,11 +511,11 @@ app.get('/api/projects', (req, res) => {
     const tdi = Array.from(ratingsMap.values()).reduce((a, b) => a + b, 0);
     const vaf = Math.round((0.65 + tdi * 0.01) * 100) / 100;
     const fpa_points = Math.round((ufp * vaf) * 10) / 10;
-    
+
     // 2. COSMIC Size
     const movements = db.cosmic_movements.filter((m: any) => storyIds.includes(m.story_id));
     const cosmic_points = movements.length;
-    
+
     // 3. Hybrid Size
     let hybrid_points = 0;
     stories.forEach((s: any) => {
@@ -471,7 +540,7 @@ app.get('/api/projects', (req, res) => {
         const totalLength = goal.length + benefit.length;
         if (totalLength > 150) score += 2;
         else if (totalLength > 80) score += 1;
-        
+
         let pts = 1;
         if (score <= 2) pts = 1;
         else if (score === 3) pts = 2;
@@ -526,7 +595,7 @@ app.get('/api/projects', (req, res) => {
   res.json(enriched);
 });
 
-app.get('/api/projects/:id', (req, res) => {
+app.get('/api/projects/:id', (req: Request, res: Response) => {
   const { id } = req.params;
   const db = readDb();
   const project = db.projects.find((p: any) => p.id === id);
@@ -566,7 +635,7 @@ app.get('/api/projects/:id', (req, res) => {
       if (d.name === 'Risk' && (existingNames.includes('risk contingency') || existingNames.includes('risk'))) return false;
       return !existingNames.includes(d.name.toLowerCase());
     });
-    
+
     if (toAdd.length > 0) {
       db.overheads.push(...toAdd);
       writeDb(db);
@@ -607,7 +676,7 @@ app.get('/api/projects/:id', (req, res) => {
   });
 });
 
-app.post('/api/projects', (req, res) => {
+app.post('/api/projects', (req: Request, res: Response) => {
   const { name, client, description, version, project_type, estimator_id, currency, team_size } = req.body;
   if (!name) {
     return res.status(400).json({ error: 'Project name is required' });
@@ -630,7 +699,7 @@ app.post('/api/projects', (req, res) => {
   };
 
   db.projects.push(newProject);
-  
+
   // Set default cost configuration
   const newCostConfig = {
     project_id: newProject.id,
@@ -669,7 +738,7 @@ app.post('/api/projects', (req, res) => {
 });
 
 // Duplicate project API
-app.post('/api/projects/:id/duplicate', (req, res) => {
+app.post('/api/projects/:id/duplicate', (req: Request, res: Response) => {
   const { id } = req.params;
   const db = readDb();
   const sourceProj = db.projects.find((p: any) => p.id === id);
@@ -775,7 +844,7 @@ app.post('/api/projects/:id/duplicate', (req, res) => {
   res.json(dupProj);
 });
 
-app.put('/api/projects/:id', (req, res) => {
+app.put('/api/projects/:id', (req: Request, res: Response) => {
   const { id } = req.params;
   const db = readDb();
   const index = db.projects.findIndex((p: any) => p.id === id);
@@ -792,7 +861,7 @@ app.put('/api/projects/:id', (req, res) => {
   res.json(db.projects[index]);
 });
 
-app.put('/api/projects/:id/actuals', (req, res) => {
+app.put('/api/projects/:id/actuals', (req: Request, res: Response) => {
   const { id } = req.params;
   const db = readDb();
   const index = db.projects.findIndex((p: any) => p.id === id);
@@ -813,10 +882,10 @@ app.put('/api/projects/:id/actuals', (req, res) => {
   res.json(db.projects[index]);
 });
 
-app.delete('/api/projects/:id', (req, res) => {
+app.delete('/api/projects/:id', (req: Request, res: Response) => {
   const { id } = req.params;
   const db = readDb();
-  
+
   // Guard role check (Admin Only as per SPEC-CLOUD user roles table)
   if (db.user_profile?.role !== 'admin') {
     return res.status(403).json({ error: 'Access denied. Administrator privileges required.' });
@@ -839,7 +908,7 @@ app.delete('/api/projects/:id', (req, res) => {
 });
 
 // Stories
-app.get('/api/stories', (req, res) => {
+app.get('/api/stories', (req: Request, res: Response) => {
   const { project_id } = req.query;
   const db = readDb();
   if (project_id) {
@@ -848,7 +917,7 @@ app.get('/api/stories', (req, res) => {
   res.json(db.user_stories);
 });
 
-app.post('/api/stories', (req, res) => {
+app.post('/api/stories', (req: Request, res: Response) => {
   const stories = Array.isArray(req.body) ? req.body : [req.body];
   const db = readDb();
   const createdStories: any[] = [];
@@ -904,16 +973,16 @@ app.post('/api/stories', (req, res) => {
   res.status(201).json(createdStories);
 });
 
-app.post('/api/stories/generate-from-requirements', async (req, res) => {
+app.post('/api/stories/generate-from-requirements', async (req: Request, res: Response) => {
   const { requirements, project_id, default_epic } = req.body;
-  
+
   if (!requirements || !project_id) {
     return res.status(400).json({ error: 'Requirements and project_id are required.' });
   }
 
   const db = readDb();
   const ai = getAi();
-  
+
   if (!ai) {
     return res.status(503).json({ error: 'Gemini API not configured. Please set GEMINI_API_KEY inside the Secrets settings.' });
   }
@@ -998,7 +1067,7 @@ Assign priority (High, Medium, or Low). Set realistic agile goals.`;
 
     // Update usage log
     db.gemini_usage.push({ date: new Date().toISOString(), usage: 1 });
-    
+
     writeDb(db);
     res.status(201).json(createdStories);
   } catch (err: any) {
@@ -1008,7 +1077,7 @@ Assign priority (High, Medium, or Low). Set realistic agile goals.`;
 });
 
 // Generate user stories by parsing PDF and DOCX attachments cleanly one-by-one with cross-file context
-app.post('/api/stories/generate-from-attachments', async (req, res) => {
+app.post('/api/stories/generate-from-attachments', async (req: Request, res: Response) => {
   const { files, project_id, default_epic } = req.body;
   if (!files || !Array.isArray(files) || files.length === 0 || !project_id) {
     return res.status(400).json({ error: 'Files and project_id are required.' });
@@ -1026,19 +1095,21 @@ app.post('/api/stories/generate-from-attachments', async (req, res) => {
     for (const f of files) {
       const buffer = Buffer.from(f.data, 'base64');
       let extractedText = '';
+
       if (f.name.toLowerCase().endsWith('.pdf') || f.type === 'application/pdf') {
-        const pdfParser = new PDFParse({ data: new Uint8Array(buffer) });
-        const parsed = await pdfParser.getText();
-        extractedText = parsed.text;
+        // Corrected: Calling the library as a function
+        const pdfParse = require('pdf-parse');
+        const data = await pdfParse(buffer);
+        extractedText = data.text;
       } else if (f.name.toLowerCase().endsWith('.docx') || f.type.includes('word') || f.type.includes('officedocument')) {
         const parsed = await mammoth.extractRawText({ buffer });
         extractedText = parsed.value;
       } else {
         extractedText = buffer.toString('utf8');
       }
+
       parsedTexts.push({ name: f.name, text: extractedText });
     }
-
     const filesFormatted = parsedTexts.map((item, idx) => `
 Attachment #${idx + 1}: "${item.name}"
 --------------------
@@ -1145,7 +1216,7 @@ Return your response strictly as a JSON array of stories. Do not wrap the JSON i
 });
 
 // Ask Gemini to suggest role-based resource types and counts (onsite, offshore, nearshore, employee) based on available user stories
-app.post('/api/projects/:id/suggest-resources', async (req, res) => {
+app.post('/api/projects/:id/suggest-resources', async (req: Request, res: Response) => {
   const { id } = req.params;
   const db = readDb();
   const project = db.projects.find((p: any) => p.id === id);
@@ -1160,7 +1231,7 @@ app.post('/api/projects/:id/suggest-resources', async (req, res) => {
   }
 
   try {
-    const storiesText = stories.length > 0 
+    const storiesText = stories.length > 0
       ? stories.map((s: any) => `- STORY ${s.story_id}: Role: ${s.role}, Goal: ${s.goal} [Module: ${s.module}, Priority: ${s.priority}]`).join('\n')
       : 'No explicit stories available yet. Formulate estimates based on standard project types.';
 
@@ -1239,7 +1310,7 @@ Return your response strictly as a JSON array of roles without markdown wrap blo
 });
 
 // Execute and report diagnostic test assertions instantly on the frontend
-app.post('/api/tests/run', (req, res) => {
+app.post('/api/tests/run', (req: Request, res: Response) => {
   try {
     const results = [
       { id: 't1', name: 'Unit - FPA Complexity Mapping (ILF & EIF)', type: 'Unit', status: 'PASSED', suite: 'FPA Analysis' },
@@ -1362,7 +1433,7 @@ app.post('/api/tests/run', (req, res) => {
   }
 });
 
-app.put('/api/stories/:id', (req, res) => {
+app.put('/api/stories/:id', (req: Request, res: Response) => {
   const { id } = req.params;
   const db = readDb();
   const index = db.user_stories.findIndex((s: any) => s.id === id);
@@ -1378,7 +1449,7 @@ app.put('/api/stories/:id', (req, res) => {
   res.json(db.user_stories[index]);
 });
 
-app.post('/api/stories/:id/elaborate', async (req, res) => {
+app.post('/api/stories/:id/elaborate', async (req: Request, res: Response) => {
   const { id } = req.params;
   const db = readDb();
   const story = db.user_stories.find((s: any) => s.id === id);
@@ -1418,7 +1489,7 @@ Decompose this story and elaborate:
     });
 
     const text = response.text || 'No elaboration returned.';
-    
+
     // Save to database
     const index = db.user_stories.findIndex((s: any) => s.id === id);
     db.user_stories[index].elaboration_text = text;
@@ -1434,7 +1505,7 @@ Decompose this story and elaborate:
   }
 });
 
-app.post('/api/stories/:id/split', async (req, res) => {
+app.post('/api/stories/:id/split', async (req: Request, res: Response) => {
   const { id } = req.params;
   const db = readDb();
   const story = db.user_stories.find((s: any) => s.id === id);
@@ -1522,10 +1593,10 @@ JSON Schema format:
   }
 });
 
-app.post('/api/stories/:id/split-apply', async (req, res) => {
+app.post('/api/stories/:id/split-apply', async (req: Request, res: Response) => {
   const { id } = req.params;
   const { childStories, action } = req.body; // action: 'replace' | 'keep'
-  
+
   if (!childStories || !Array.isArray(childStories)) {
     return res.status(400).json({ error: 'childStories array is required.' });
   }
@@ -1580,10 +1651,10 @@ app.post('/api/stories/:id/split-apply', async (req, res) => {
   res.status(201).json({ success: true, createdStories });
 });
 
-app.delete('/api/stories/:id', (req, res) => {
+app.delete('/api/stories/:id', (req: Request, res: Response) => {
   const { id } = req.params;
   const db = readDb();
-  
+
   db.user_stories = db.user_stories.filter((s: any) => s.id !== id);
   db.ai_classifications = db.ai_classifications.filter((c: any) => c.story_id !== id);
   db.cosmic_movements = db.cosmic_movements.filter((m: any) => m.story_id !== id);
@@ -1599,12 +1670,12 @@ app.delete('/api/stories/:id', (req, res) => {
 });
 
 // Cosmic Movements
-app.get('/api/cosmic_movements', (req, res) => {
+app.get('/api/cosmic_movements', (req: Request, res: Response) => {
   const db = readDb();
   res.json(db.cosmic_movements);
 });
 
-app.post('/api/cosmic_movements', (req, res) => {
+app.post('/api/cosmic_movements', (req: Request, res: Response) => {
   const db = readDb();
   const newMov = {
     id: 'mov-' + Math.random().toString(36).substr(2, 9),
@@ -1617,7 +1688,7 @@ app.post('/api/cosmic_movements', (req, res) => {
   res.status(201).json(newMov);
 });
 
-app.delete('/api/cosmic_movements/:id', (req, res) => {
+app.delete('/api/cosmic_movements/:id', (req: Request, res: Response) => {
   const { id } = req.params;
   const db = readDb();
   db.cosmic_movements = db.cosmic_movements.filter((m: any) => m.id !== id);
@@ -1631,12 +1702,12 @@ app.delete('/api/cosmic_movements/:id', (req, res) => {
 });
 
 // Hybrid Criteria
-app.get('/api/hybrid_criteria', (req, res) => {
+app.get('/api/hybrid_criteria', (req: Request, res: Response) => {
   const db = readDb();
   res.json(db.hybrid_criteria);
 });
 
-app.post('/api/hybrid_criteria', (req, res) => {
+app.post('/api/hybrid_criteria', (req: Request, res: Response) => {
   const db = readDb();
   const { id, ...rest } = req.body;
   const newCrit = {
@@ -1649,7 +1720,7 @@ app.post('/api/hybrid_criteria', (req, res) => {
   res.status(201).json(newCrit);
 });
 
-app.put('/api/hybrid_criteria/:id', (req, res) => {
+app.put('/api/hybrid_criteria/:id', (req: Request, res: Response) => {
   const { id } = req.params;
   const db = readDb();
   const idx = db.hybrid_criteria.findIndex((c: any) => c.id === id);
@@ -1662,7 +1733,7 @@ app.put('/api/hybrid_criteria/:id', (req, res) => {
   }
 });
 
-app.delete('/api/hybrid_criteria/:id', (req, res) => {
+app.delete('/api/hybrid_criteria/:id', (req: Request, res: Response) => {
   const { id } = req.params;
   const db = readDb();
   db.hybrid_criteria = db.hybrid_criteria.filter((c: any) => c.id !== id);
@@ -1678,16 +1749,16 @@ app.delete('/api/hybrid_criteria/:id', (req, res) => {
 });
 
 // Hybrid Scores
-app.get('/api/hybrid_scores', (req, res) => {
+app.get('/api/hybrid_scores', (req: Request, res: Response) => {
   const db = readDb();
   res.json(db.hybrid_scores);
 });
 
-app.post('/api/hybrid_scores', (req, res) => {
+app.post('/api/hybrid_scores', (req: Request, res: Response) => {
   const { story_id, criterion_id, score, is_ai_suggested } = req.body;
   const db = readDb();
   const existingIndex = db.hybrid_scores.findIndex((s: any) => s.story_id === story_id && s.criterion_id === criterion_id);
-  
+
   const scoreData = {
     id: existingIndex !== -1 ? db.hybrid_scores[existingIndex].id : 'sc-' + Math.random().toString(36).substr(2, 9),
     story_id,
@@ -1707,16 +1778,16 @@ app.post('/api/hybrid_scores', (req, res) => {
 });
 
 // Fpa ratings
-app.get('/api/fpa_gsc_ratings', (req, res) => {
+app.get('/api/fpa_gsc_ratings', (req: Request, res: Response) => {
   const db = readDb();
   res.json(db.fpa_gsc_ratings);
 });
 
-app.post('/api/fpa_gsc_ratings', (req, res) => {
+app.post('/api/fpa_gsc_ratings', (req: Request, res: Response) => {
   const { project_id, gsc_number, rating } = req.body;
   const db = readDb();
   const idx = db.fpa_gsc_ratings.findIndex((r: any) => r.project_id === project_id && r.gsc_number === Number(gsc_number));
-  
+
   const record = { project_id, gsc_number: Number(gsc_number), rating: Number(rating) };
   if (idx !== -1) {
     db.fpa_gsc_ratings[idx] = record;
@@ -1728,12 +1799,12 @@ app.post('/api/fpa_gsc_ratings', (req, res) => {
 });
 
 // Overheads
-app.get('/api/overheads', (req, res) => {
+app.get('/api/overheads', (req: Request, res: Response) => {
   const db = readDb();
   res.json(db.overheads);
 });
 
-app.post('/api/overheads', (req, res) => {
+app.post('/api/overheads', (req: Request, res: Response) => {
   const db = readDb();
   const newOh = {
     id: 'oh-' + Math.random().toString(36).substr(2, 9),
@@ -1745,7 +1816,7 @@ app.post('/api/overheads', (req, res) => {
   res.status(201).json(newOh);
 });
 
-app.put('/api/overheads/:id', (req, res) => {
+app.put('/api/overheads/:id', (req: Request, res: Response) => {
   const { id } = req.params;
   const db = readDb();
   const idx = db.overheads.findIndex((o: any) => o.id === id);
@@ -1758,7 +1829,7 @@ app.put('/api/overheads/:id', (req, res) => {
   }
 });
 
-app.delete('/api/overheads/:id', (req, res) => {
+app.delete('/api/overheads/:id', (req: Request, res: Response) => {
   const { id } = req.params;
   const db = readDb();
   db.overheads = db.overheads.filter((o: any) => o.id !== id);
@@ -1772,12 +1843,12 @@ app.delete('/api/overheads/:id', (req, res) => {
 });
 
 // Cost Config
-app.get('/api/cost_config', (req, res) => {
+app.get('/api/cost_config', (req: Request, res: Response) => {
   const db = readDb();
   res.json(db.cost_configs);
 });
 
-app.post('/api/cost_config', (req, res) => {
+app.post('/api/cost_config', (req: Request, res: Response) => {
   const db = readDb();
   const idx = db.cost_configs.findIndex((c: any) => c.project_id === req.body.project_id);
   if (idx !== -1) {
@@ -1790,17 +1861,17 @@ app.post('/api/cost_config', (req, res) => {
 });
 
 // Estimator Feedback Audit Trails
-app.get('/api/estimator_feedback', (req, res) => {
+app.get('/api/estimator_feedback', (req: Request, res: Response) => {
   const { projectId } = req.query;
   const db = readDb();
   const feedback = db.estimator_feedback || [];
   if (projectId) {
-    return res.json(feedback.filter((fb: any) => fb.project_id === projectId));
+    return res.json(feedback.filter((fb: any) => fb.project_id === (projectId as string)));
   }
   res.json(feedback);
 });
 
-app.post('/api/estimator_feedback', (req, res) => {
+app.post('/api/estimator_feedback', (req: Request, res: Response) => {
   const db = readDb();
   if (!db.estimator_feedback) {
     db.estimator_feedback = [];
@@ -1820,7 +1891,7 @@ app.post('/api/estimator_feedback', (req, res) => {
 });
 
 // System settings / config
-app.get('/api/system_config', (req, res) => {
+app.get('/api/system_config', (req: Request, res: Response) => {
   const db = readDb();
   res.json({
     system_config: db.system_config,
@@ -1831,14 +1902,14 @@ app.get('/api/system_config', (req, res) => {
       projects_count: db.projects.length,
       stories_count: db.user_stories.length,
       analyses_count: db.ai_classifications.length,
-      average_confidence: db.ai_classifications.length > 0 
+      average_confidence: db.ai_classifications.length > 0
         ? Math.round(db.ai_classifications.reduce((acc: number, c: any) => acc + (c.confidence || 0), 0) / db.ai_classifications.length)
         : 88
     }
   });
 });
 
-app.post('/api/system_config', (req, res) => {
+app.post('/api/system_config', (req: Request, res: Response) => {
   const db = readDb();
   // Guard role check (Admin Only!)
   if (db.user_profile?.role !== 'admin') {
@@ -1853,7 +1924,7 @@ app.post('/api/system_config', (req, res) => {
 });
 
 // --- SUPABASE ADMINISTRATIVE COMMANDS ---
-app.get('/api/admin/supabase-status', async (req, res) => {
+app.get('/api/admin/supabase-status', async (req: Request, res: Response) => {
   try {
     const status = await testSupabaseConnectionDetail();
     res.json(status);
@@ -1862,7 +1933,7 @@ app.get('/api/admin/supabase-status', async (req, res) => {
   }
 });
 
-app.post('/api/admin/supabase-sync', async (req, res) => {
+app.post('/api/admin/supabase-sync', async (req: Request, res: Response) => {
   try {
     const result = await forceSyncLocalToSupabase();
     res.json(result);
@@ -1872,12 +1943,12 @@ app.post('/api/admin/supabase-sync', async (req, res) => {
 });
 
 // Overrides audit trail
-app.get('/api/ai_overrides', (req, res) => {
+app.get('/api/ai_overrides', (req: Request, res: Response) => {
   const db = readDb();
   res.json(db.ai_overrides);
 });
 
-app.post('/api/ai_overrides', (req, res) => {
+app.post('/api/ai_overrides', (req: Request, res: Response) => {
   const db = readDb();
   const newOverride = {
     id: 'ovr-' + Math.random().toString(36).substr(2, 9),
@@ -1892,7 +1963,7 @@ app.post('/api/ai_overrides', (req, res) => {
   }
 
   db.ai_overrides.push(newOverride);
-  
+
   // Update AI classification status to 'overridden'
   const storyIdx = db.user_stories.findIndex((s: any) => s.id === newOverride.story_id);
   if (storyIdx !== -1) {
@@ -1904,14 +1975,14 @@ app.post('/api/ai_overrides', (req, res) => {
 });
 
 // Error Logs
-app.get('/api/ai_errors', (req, res) => {
+app.get('/api/ai_errors', (req: Request, res: Response) => {
   const db = readDb();
   res.json(db.ai_errors);
 });
 
 // Jira and Azure simulation fetch (CORS escape logic)
-app.get('/api/jira/connect', (req, res) => {
-  const { url, projectKey } = req.query;
+app.get('/api/jira/connect', (req: Request, res: Response) => {
+  const { projectKey } = req.query;
   const mockJiraStories = [
     { story_id: `${projectKey}-301`, goal: 'As an Estimator, I want to edit functional complexity levels inline, so that I can override system estimations easily.', epic: 'Estimation Matrix', priority: 'High', source: 'jira' },
     { story_id: `${projectKey}-302`, goal: 'As a Stakeholder, I want to generate elegant PDF and Excel summary documents, so that I can print or distribute budgets.', epic: 'Export Pipeline', priority: 'High', source: 'jira' },
@@ -1921,8 +1992,7 @@ app.get('/api/jira/connect', (req, res) => {
   res.json(mockJiraStories);
 });
 
-app.get('/api/azure/connect', (req, res) => {
-  const { orgUrl, project } = req.query;
+app.get('/api/azure/connect', (req: Request, res: Response) => {
   const mockAzureStories = [
     { story_id: `AZ-${101}`, goal: 'As a Registered Estimator, I want to upload a CSV file with story details, so that I can initialize estimates quickly.', epic: 'Ingestion Platform', priority: 'High', source: 'azure' },
     { story_id: `AZ-${102}`, goal: 'As an Evaluator, I want to trace COSMIC entry/exits on Processes cards, so that I can visualise transaction costs.', epic: 'COSMIC Flows', priority: 'Medium', source: 'azure' },
@@ -1937,7 +2007,7 @@ function computeFpaFP(type: string, rets: number, dets: number, ftrs: number): {
   const r = Number(rets) || 1;
   const d = Number(dets) || 1;
   const f = Number(ftrs) || 0;
-  
+
   if (type === 'ILF') {
     if (r === 1) {
       if (d <= 19) return { fp: 7, complexity: 'Low' };
@@ -1991,7 +2061,7 @@ function calculateStoryPointsFromUserStoryHeuristic(s: any): number {
   const benefit = (s.benefit || '').toLowerCase();
   const tags = (s.tags || '').toLowerCase();
   const role = (s.role || '').toLowerCase();
-  
+
   let score = 1; // base score
 
   // 1. Integration or API connectivity
@@ -2049,7 +2119,7 @@ function calculateStoryPointsFromUserStoryHeuristic(s: any): number {
   return 13;
 }
 
-app.post('/api/analyse', async (req, res) => {
+app.post('/api/analyse', async (req: Request, res: Response) => {
   const { storyId, storyText, projectType } = req.body;
   if (!storyId || !storyText) {
     return res.status(400).json({ error: 'Story ID and text are required.' });
@@ -2123,13 +2193,13 @@ Estimate parameters. For "storyPoints", estimate the Agile Story Points independ
           temperature: 0.1
         }
       });
-      
+
       const text = response.text || '';
       const cleanJsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
       classificationResult = JSON.parse(cleanJsonStr);
       aiCallSuccess = true;
       activeProvider = 'gemini';
-      
+
       // Update usage log
       db.gemini_usage.push({ date: new Date().toISOString(), usage: 1 });
     } catch (err: any) {
@@ -2148,7 +2218,7 @@ Estimate parameters. For "storyPoints", estimate the Agile Story Points independ
   // Fallback / Simulated heuristic logic when offline or API is absent (ensuring perfect 100% test passing)
   if (!aiCallSuccess || !classificationResult) {
     activeProvider = ai ? 'gemini-fallback' : 'local-estimator';
-    
+
     // Determine logical FPA type
     let fType: 'ILF' | 'EIF' | 'EI' | 'EO' | 'EQ' = 'EI';
     let rets = 0;
@@ -2213,7 +2283,7 @@ Estimate parameters. For "storyPoints", estimate the Agile Story Points independ
     const dataV = storyTextLower.includes('database') || storyTextLower.includes('volume') ? 8 : 4;
     const busL = fType === 'EO' || storyTextLower.includes('summarize') ? 8 : 4;
 
-    const hybridScore = Math.round(((uiC*0.3 + intR*0.25 + dataV*0.2 + busL*0.25) * 10) * 10) / 10;
+    const hybridScore = Math.round(((uiC * 0.3 + intR * 0.25 + dataV * 0.2 + busL * 0.25) * 10) * 10) / 10;
     const complexLimit = hybridScore > 75 ? 'Very High' : hybridScore > 50 ? 'High' : hybridScore > 25 ? 'Medium' : 'Low';
 
     classificationResult = {
@@ -2350,7 +2420,7 @@ Estimate parameters. For "storyPoints", estimate the Agile Story Points independ
     } else if (nameLower.includes('logic') || nameLower.includes('business')) {
       scoreVal = classificationResult.hybrid.dimensions.businessLogic;
     }
-    
+
     // Check if score exists
     const scoreIdx = db.hybrid_scores.findIndex((s: any) => s.story_id === storyId && s.criterion_id === crit.id);
     const scorePayload = {
