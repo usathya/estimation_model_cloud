@@ -64,7 +64,7 @@ import {
   mapCostConfigToDb,
   mapSystemConfigToDb,
   mapAiOverrideFromDb
-} from './supabase_db.js';
+} from '../../supabase_db.js';
 
 let globalDbCache: any = null;
 
