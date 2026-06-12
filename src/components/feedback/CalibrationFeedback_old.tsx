@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { useProject } from '../../context/ProjectContext';
-import { useAuth } from '../../context/AuthContext';
-import { SaudiRiyalIcon } from '../icons/SaudiRiyalIcon';
-import { 
-  calculateFpaTotalMetrics, 
-  calculateCosmicTotalMetrics, 
+import { useProject } from '../../context/ProjectContext.js';
+import { useAuth } from '../../context/AuthContext.js';
+import { SaudiRiyalIcon } from '../icons/SaudiRiyalIcon.js';
+import {
+  calculateFpaTotalMetrics,
+  calculateCosmicTotalMetrics,
   calculateHybridTotalMetrics,
   calculateOverheadImpacts
-} from '../../lib/engines';
-import { 
-  Scale, 
-  HelpCircle, 
-  ChevronDown, 
-  ChevronUp, 
-  Star, 
-  MessageSquare, 
+} from '../../lib/engines.js';
+import {
+  Scale,
+  HelpCircle,
+  ChevronDown,
+  ChevronUp,
+  Star,
+  MessageSquare,
   CheckCircle,
   AlertTriangle,
   Flame,
@@ -77,12 +77,7 @@ export default function CalibrationFeedback() {
   const hybridTotalPoints = Math.round((hybridBasePoints + ohImpacts.hybridOhPoints) * 100) / 100;
 
   // Constant Pricing factor indicators
-  const isRoleBased = currentProject.costConfig?.use_role_rates ?? false;
-  const rolesList = currentProject.costConfig?.roles || [];
-  const netFte = isRoleBased 
-    ? rolesList.reduce((sum, r) => sum + ((r.allocation_percent || 0) / 100) * ((r.resources_onsite || 0) + (r.resources_offshore || 0) + (r.resources_nearshore || 0)), 0)
-    : 0;
-  const teamSize = (isRoleBased && netFte > 0) ? Math.round(netFte * 100) / 100 : (currentProject.project?.team_size ?? 5);
+  const teamSize = currentProject.project?.team_size ?? 5;
   const workDays = currentProject.costConfig?.working_days_per_month ?? 22;
 
   const fpaProd = currentProject.costConfig?.fpa_productivity_rate ?? 0.75;
@@ -242,7 +237,7 @@ export default function CalibrationFeedback() {
     if (variance === null) return <span className="text-slate-400 font-mono">-</span>;
     const absVal = Math.abs(variance);
     const textSymbol = variance > 0 ? `+${variance.toFixed(1)}%` : `${variance.toFixed(1)}%`;
-    
+
     if (absVal <= 10) {
       return <span className="inline-block bg-emerald-100 text-emerald-850 font-mono font-extrabold text-[10px] px-2 py-0.5 rounded">{textSymbol} (Excellent Match)</span>;
     }
@@ -254,7 +249,7 @@ export default function CalibrationFeedback() {
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
-      
+
       {/* SECTION 1: GLOBAL COST & PRODUCTIVITY COEFFICIENTS (Common for all models) */}
       <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
         <div className="bg-slate-50 p-4 border-b border-slate-200 flex items-center justify-between text-left">
@@ -264,7 +259,7 @@ export default function CalibrationFeedback() {
           </div>
           <span className="text-[10px] font-mono text-slate-400">Common configuration for FPA, COSMIC, and Hybrid models</span>
         </div>
-        
+
         <form onSubmit={handleUpdateCostConfig} className="p-5 text-xs font-sans text-slate-650 bg-white grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 items-end">
           <div className="space-y-1">
             <label className="text-[9px] font-mono uppercase font-bold text-slate-450 block">FPA Prod (pts/day)</label>
@@ -277,7 +272,7 @@ export default function CalibrationFeedback() {
               className="w-full bg-slate-50 border border-slate-300 rounded p-2 focus:outline-none focus:border-indigo-500 font-semibold"
             />
           </div>
-          
+
           <div className="space-y-1">
             <label className="text-[9px] font-mono uppercase font-bold text-slate-450 block">FPA Cost per Point ({currentProject.project?.currency || 'SAR'})</label>
             <input
@@ -337,9 +332,9 @@ export default function CalibrationFeedback() {
 
           {!isViewer && (
             <button
-               id="cost-config-save-btn"
-               type="submit"
-               className="bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2 px-4 rounded shadow transition cursor-pointer leading-tight h-9 font-mono text-[9px] uppercase w-full"
+              id="cost-config-save-btn"
+              type="submit"
+              className="bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2 px-4 rounded shadow transition cursor-pointer leading-tight h-9 font-mono text-[9px] uppercase w-full"
             >
               Update Parameters
             </button>
@@ -706,7 +701,7 @@ export default function CalibrationFeedback() {
 
       {/* Review Feedback form & Timeline audits - SECTION C */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
+
         {/* Left Form review write panel */}
         {!isViewer && (
           <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
@@ -714,7 +709,7 @@ export default function CalibrationFeedback() {
               <MessageSquare className="w-4.5 h-4.5 text-indigo-650" />
               <h4 className="font-sans font-extrabold text-xs text-slate-800 tracking-tight">Post-Analysis Review</h4>
             </div>
-            
+
             <form onSubmit={handleFeedbackSubmit} className="space-y-3.5 text-xs font-sans">
               <div className="space-y-1">
                 <label className="text-[9px] font-mono uppercase font-bold text-slate-450 block">Review Subject Summary</label>

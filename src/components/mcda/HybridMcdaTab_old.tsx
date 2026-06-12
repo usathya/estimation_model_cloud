@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { useProject } from '../../context/ProjectContext';
-import { useAuth } from '../../context/AuthContext';
-import { calculateHybridTotalMetrics, calculateHybridScoreForStory, calculateStoryPointsFromUserStory, calculateOverheadImpacts } from '../../lib/engines';
-import { 
-  BarChart, 
-  HelpCircle, 
-  Settings, 
-  ChevronDown, 
-  ChevronUp, 
+import { useProject } from '../../context/ProjectContext.js';
+import { useAuth } from '../../context/AuthContext.js';
+import { calculateHybridTotalMetrics, calculateHybridScoreForStory, calculateStoryPointsFromUserStory, calculateOverheadImpacts } from '../../lib/engines.js';
+import {
+  BarChart,
+  HelpCircle,
+  Settings,
+  ChevronDown,
+  ChevronUp,
   AlertTriangle,
   Lightbulb,
   Briefcase,
@@ -24,7 +24,7 @@ import {
   Sparkles,
   Loader2
 } from 'lucide-react';
-import { SaudiRiyalIcon } from '../icons/SaudiRiyalIcon';
+import { SaudiRiyalIcon } from '../icons/SaudiRiyalIcon.js';
 
 interface EditablePercentDropdownProps {
   value: number;
@@ -34,12 +34,12 @@ interface EditablePercentDropdownProps {
   step?: number;
 }
 
-function EditablePercentDropdown({ 
-  value, 
-  maxAllowed, 
-  onChange, 
+function EditablePercentDropdown({
+  value,
+  maxAllowed,
+  onChange,
   disabled,
-  step = 5 
+  step = 5
 }: EditablePercentDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState(value.toString());
@@ -125,9 +125,9 @@ function EditablePercentDropdown({
               onClick={() => setIsOpen(!isOpen)}
               className="text-slate-400 hover:text-slate-650 p-0.5 cursor-pointer flex items-center justify-center"
             >
-              <ChevronDown 
-                className="w-3.5 h-3.5 transition-transform duration-150 text-slate-400" 
-                style={{ transform: isOpen ? 'rotate(180deg)' : 'none' }} 
+              <ChevronDown
+                className="w-3.5 h-3.5 transition-transform duration-150 text-slate-400"
+                style={{ transform: isOpen ? 'rotate(180deg)' : 'none' }}
               />
             </button>
           )}
@@ -145,9 +145,8 @@ function EditablePercentDropdown({
                 setInputValue(option.toString());
                 setIsOpen(false);
               }}
-              className={`w-full text-left px-3 py-1.5 hover:bg-slate-50 font-mono flex justify-between items-center transition cursor-pointer ${
-                value === option ? 'bg-teal-50/50 text-teal-650 font-bold' : ''
-              }`}
+              className={`w-full text-left px-3 py-1.5 hover:bg-slate-50 font-mono flex justify-between items-center transition cursor-pointer ${value === option ? 'bg-teal-50/50 text-teal-650 font-bold' : ''
+                }`}
             >
               <span>{option}%</span>
               {value === option && <Check className="w-3 h-3 text-teal-600" />}
@@ -237,12 +236,7 @@ export default function HybridMcdaTab() {
     );
   }
 
-  const isRoleBased = currentProject.costConfig?.use_role_rates ?? false;
-  const rolesList = currentProject.costConfig?.roles || [];
-  const netFte = isRoleBased 
-    ? rolesList.reduce((sum, r) => sum + ((r.allocation_percent || 0) / 100) * ((r.resources_onsite || 0) + (r.resources_offshore || 0) + (r.resources_nearshore || 0)), 0)
-    : 0;
-  const teamSize = (isRoleBased && netFte > 0) ? Math.round(netFte * 100) / 100 : (currentProject.project?.team_size ?? 5);
+  const teamSize = currentProject.project?.team_size ?? 5;
   const prodRate = currentProject.costConfig?.hybrid_productivity_rate ?? 1.5;
   const workDays = currentProject.costConfig?.working_days_per_month ?? 22;
   const pointCost = currentProject.costConfig?.hybrid_cost_per_point ?? 1875;
@@ -288,7 +282,7 @@ export default function HybridMcdaTab() {
         weight_percent: assignedWeight
       });
     });
-    
+
     try {
       await Promise.all(promises);
     } catch (err) {
@@ -388,7 +382,7 @@ export default function HybridMcdaTab() {
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
-      
+
       {/* Metrics Banner */}
       <div id="hybrid-cost-cards-strip" className="grid grid-cols-1 md:grid-cols-3 gap-4 font-sans">
         <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex items-center gap-3">
@@ -464,11 +458,10 @@ export default function HybridMcdaTab() {
                 Equalize Weights
               </button>
             )}
-            <span 
-              id="mcda-sum-weight-badge" 
-              className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded flex items-center gap-1.5 transition-colors duration-155 select-none ${
-                isWeightsValid ? 'bg-emerald-100 text-emerald-855' : 'bg-rose-100 text-rose-800'
-              }`}
+            <span
+              id="mcda-sum-weight-badge"
+              className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded flex items-center gap-1.5 transition-colors duration-155 select-none ${isWeightsValid ? 'bg-emerald-100 text-emerald-855' : 'bg-rose-100 text-rose-800'
+                }`}
             >
               <span>Weights: {weightsSum}% / 100%</span>
               {!isWeightsValid && <span className="animate-pulse">⚠️</span>}
@@ -554,7 +547,7 @@ export default function HybridMcdaTab() {
 
                 <div className="space-y-2">
                   <h6 className="font-bold text-xs text-teal-700 pr-4">New Custom Criterion</h6>
-                  
+
                   {/* Name field */}
                   <div className="space-y-0.5">
                     <label className="text-[9px] font-mono font-bold text-slate-400 block uppercase">Criterion Name</label>
@@ -638,7 +631,7 @@ export default function HybridMcdaTab() {
           </div>
           <span className="text-[10px] font-sans text-slate-400">Identify complexity via MCDA, and score actual points using Fibonacci story points.</span>
         </div>
- 
+
         <div className="overflow-x-auto w-full">
           {currentProject.stories.length === 0 ? (
             <div className="text-center py-12 text-slate-400 select-none">
@@ -665,14 +658,14 @@ export default function HybridMcdaTab() {
                 {currentProject.stories.map((story) => {
                   const { weightedScore, complexity } = calculateHybridScoreForStory(story.id, currentProject.criteria, currentProject.scores);
                   const selectedStoryPoints = story.story_points !== undefined && story.story_points !== null ? story.story_points : calculateStoryPointsFromUserStory(story);
-                  
+
                   // Determining the estimation algorithm source
                   const classif = currentProject.classifications?.find(c => c.story_id === story.id && c.model_type === 'hybrid');
                   const provider = classif?.ai_provider || '';
-                  
+
                   let badgeLabel = 'Heuristic';
                   let badgeColors = 'bg-slate-55 text-slate-500 border-slate-200';
-                  
+
                   if (story.ai_status === 'overridden') {
                     badgeLabel = '👤 User Override';
                     badgeColors = 'bg-indigo-50 text-indigo-700 border border-indigo-150';
@@ -724,30 +717,30 @@ export default function HybridMcdaTab() {
                         const scoreRec = currentProject.scores.find(s => s.story_id === story.id && s.criterion_id === crit.id);
                         const ratingVal = scoreRec ? scoreRec.score : 0;
                         return (
-                           <td key={crit.id} className="py-2 px-1">
-                             <select
-                               id={`mcda-cell-${story.id}-${crit.id}`}
-                               disabled={isViewer}
-                               value={ratingVal}
-                               onChange={(e) => handleScoreChange(story.id, crit.id, Number(e.target.value))}
-                               className="bg-slate-50/80 border border-slate-150 py-1.5 px-2 rounded-lg text-xs font-semibold cursor-pointer max-w-[55px]"
-                             >
-                               <option value="0">0</option>
-                               <option value="1">1</option>
-                               <option value="2">2</option>
-                               <option value="3">3</option>
-                               <option value="4">4</option>
-                               <option value="5">5</option>
-                             </select>
-                           </td>
+                          <td key={crit.id} className="py-2 px-1">
+                            <select
+                              id={`mcda-cell-${story.id}-${crit.id}`}
+                              disabled={isViewer}
+                              value={ratingVal}
+                              onChange={(e) => handleScoreChange(story.id, crit.id, Number(e.target.value))}
+                              className="bg-slate-50/80 border border-slate-150 py-1.5 px-2 rounded-lg text-xs font-semibold cursor-pointer max-w-[55px]"
+                            >
+                              <option value="0">0</option>
+                              <option value="1">1</option>
+                              <option value="2">2</option>
+                              <option value="3">3</option>
+                              <option value="4">4</option>
+                              <option value="5">5</option>
+                            </select>
+                          </td>
                         );
                       })}
-                      
+
                       {/* MCDA Score out of 100 */}
                       <td className="py-2 px-2 font-semibold font-mono text-slate-700">
                         {weightedScore.toFixed(1)}%
                       </td>
-                      
+
                       {/* Identified Complexity (Simple vs Complex) */}
                       <td className="py-2 px-2">
                         {complexity === 'Complex' ? (
@@ -756,7 +749,7 @@ export default function HybridMcdaTab() {
                           <span className="inline-block bg-emerald-50 text-emerald-700 border border-emerald-150 px-2 py-0.5 rounded text-[10px] font-bold">Simple</span>
                         )}
                       </td>
-                      
+
                       {/* Editable Agile Story Points using Fibonacci series with visual Engine identifier */}
                       <td className="py-2 px-3 bg-slate-100/50 text-center">
                         <div className="flex flex-col items-center justify-center gap-1">

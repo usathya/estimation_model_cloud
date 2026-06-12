@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { useProject } from '../../context/ProjectContext';
-import { useAuth } from '../../context/AuthContext';
-import { Project, CostConfig } from '../../types';
+import { useProject } from '../../context/ProjectContext.js';
+import { useAuth } from '../../context/AuthContext.js';
+import { Project, CostConfig } from '../../types.js';
 import CreateProjectModal from './CreateProjectModal';
-import { 
-  Building2, 
-  Coins, 
-  Users2, 
-  FileEdit, 
-  HelpCircle, 
-  Layers2, 
-  Check, 
-  ChevronDown, 
-  ChevronUp, 
+import {
+  Building2,
+  Coins,
+  Users2,
+  FileEdit,
+  HelpCircle,
+  Layers2,
+  Check,
+  ChevronDown,
+  ChevronUp,
   ListOrdered,
   Plus,
   Trash2,
@@ -27,22 +27,22 @@ interface ProjectSetupProps {
 }
 
 export default function ProjectSetup({ onShowLoadModal }: ProjectSetupProps) {
-  const { 
-    currentProject, 
-    saveProject, 
-    saveCostConfig, 
-    projects, 
-    refreshProjects, 
-    loadProject, 
-    duplicateProject, 
-    deleteProject 
+  const {
+    currentProject,
+    saveProject,
+    saveCostConfig,
+    projects,
+    refreshProjects,
+    loadProject,
+    duplicateProject,
+    deleteProject
   } = useProject();
   const { isViewer, isAdmin, profile } = useAuth();
-  
+
   const [loadedProjectId, setLoadedProjectId] = useState<string | null>(null);
   const [loadedConfigId, setLoadedConfigId] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  
+
   // Local project form values
   const [name, setName] = useState('');
   const [client, setClient] = useState('');
@@ -52,7 +52,7 @@ export default function ProjectSetup({ onShowLoadModal }: ProjectSetupProps) {
   const [status, setStatus] = useState<'Draft' | 'Under Review' | 'Approved'>('Draft');
   const [currency, setCurrency] = useState('SAR');
   const [teamSize, setTeamSize] = useState(5);
-  
+
   // Cost configuration form values
   const [isCostOpen, setIsCostOpen] = useState(true);
   const [fpaRate, setFpaRate] = useState(1875);
@@ -65,10 +65,10 @@ export default function ProjectSetup({ onShowLoadModal }: ProjectSetupProps) {
   const [hybridProductivity, setHybridProductivity] = useState(1.5);
   const [workingDays, setWorkingDays] = useState(22);
   const [useRoles, setUseRoles] = useState(false);
-  const [roles, setRoles] = useState<{ 
-    name: string; 
-    daily_rate: number; 
-    allocation_percent: number; 
+  const [roles, setRoles] = useState<{
+    name: string;
+    daily_rate: number;
+    allocation_percent: number;
     resources_onsite?: number;
     resources_offshore?: number;
     resources_nearshore?: number;
@@ -81,20 +81,20 @@ export default function ProjectSetup({ onShowLoadModal }: ProjectSetupProps) {
     if (roles.length === 0 || totalAlloc === 0) {
       return { baseBlendedRate: 0, blendedRateWithProfit: 0, fpa: 0, cosmic: 0, hybrid: 0 };
     }
-    
+
     // Base Blended Daily Rate (squad weighted average cost base number)
     const baseBlendedRate = roles.reduce((sum, r) => {
       return sum + ((r.daily_rate || 0) * (r.allocation_percent || 0)) / 100;
     }, 0);
-    
+
     // Add 40% profit margin on the base number as requested by user in Issue 11
     const blendedRateWithProfit = baseBlendedRate * 1.40;
-    
+
     // Ratecard per point = blendedRateWithProfit / productivityRate
     const derivedFpa = fpaProductivity > 0 ? blendedRateWithProfit / fpaProductivity : 0;
     const derivedCosmic = cosmicProductivity > 0 ? blendedRateWithProfit / cosmicProductivity : 0;
     const derivedHybrid = hybridProductivity > 0 ? blendedRateWithProfit / hybridProductivity : 0;
-    
+
     return {
       baseBlendedRate: Math.round(baseBlendedRate),
       blendedRateWithProfit: Math.round(blendedRateWithProfit),
@@ -117,7 +117,7 @@ export default function ProjectSetup({ onShowLoadModal }: ProjectSetupProps) {
       const derivedFpa = fpaProductivity > 0 ? blendedRate / fpaProductivity : blendedRate;
       const derivedCosmic = cosmicProductivity > 0 ? blendedRate / cosmicProductivity : blendedRate;
       const derivedHybrid = hybridProductivity > 0 ? blendedRate / hybridProductivity : blendedRate;
-      
+
       setFpaRate(Math.round(derivedFpa));
       setCosmicRate(Math.round(derivedCosmic));
       setHybridRate(Math.round(derivedHybrid));
@@ -201,7 +201,7 @@ export default function ProjectSetup({ onShowLoadModal }: ProjectSetupProps) {
     }
 
     const currentId = currentProject.project.id;
-    const configSig = currentProject.costConfig 
+    const configSig = currentProject.costConfig
       ? `${currentProject.costConfig.fpa_cost_per_point}-${currentProject.costConfig.cosmic_cost_per_point}-${currentProject.costConfig.hybrid_cost_per_point}-${currentProject.costConfig.productivity_rate}-${currentProject.costConfig.fpa_productivity_rate}-${currentProject.costConfig.cosmic_productivity_rate}-${currentProject.costConfig.hybrid_productivity_rate}-${currentProject.costConfig.use_role_rates}`
       : 'none';
 
@@ -239,7 +239,7 @@ export default function ProjectSetup({ onShowLoadModal }: ProjectSetupProps) {
   const handleProjectSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isViewer || !currentProject.project) return;
-    
+
     await saveProject({
       name,
       client,
@@ -268,16 +268,16 @@ export default function ProjectSetup({ onShowLoadModal }: ProjectSetupProps) {
       hybrid_productivity_rate: Number(hybridProductivity),
       working_days_per_month: Number(workingDays),
       use_role_rates: useRoles,
-      blended_rate: Number(blendedRate),
+      blended_rate: useRoles ? derived.blendedRateWithProfit : Number(blendedRate),
       roles
     };
     await saveCostConfig(configPaylold);
   };
 
   const addRoleHandler = () => {
-    setRoles([...roles, { 
-      name: 'New Role', 
-      daily_rate: 500, 
+    setRoles([...roles, {
+      name: 'New Role',
+      daily_rate: 500,
       allocation_percent: 10,
       resources_onsite: 0,
       resources_offshore: 0,
@@ -349,8 +349,8 @@ export default function ProjectSetup({ onShowLoadModal }: ProjectSetupProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((proj) => (
-            <div 
-              key={proj.id} 
+            <div
+              key={proj.id}
               className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs hover:shadow-md transition duration-200 flex flex-col justify-between"
             >
               <div className="space-y-3">
@@ -358,13 +358,12 @@ export default function ProjectSetup({ onShowLoadModal }: ProjectSetupProps) {
                   <h3 className="font-semibold text-slate-900 group-hover:text-teal-600 transition text-sm leading-snug line-clamp-2">
                     {proj.name}
                   </h3>
-                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
-                    proj.status === 'Approved' 
-                      ? 'bg-emerald-100 text-emerald-800' 
-                      : proj.status === 'Under Review' 
-                        ? 'bg-amber-100 text-amber-800' 
+                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full shrink-0 ${proj.status === 'Approved'
+                      ? 'bg-emerald-100 text-emerald-800'
+                      : proj.status === 'Under Review'
+                        ? 'bg-amber-100 text-amber-800'
                         : 'bg-slate-100 text-slate-600'
-                  }`}>
+                    }`}>
                     {proj.status}
                   </span>
                 </div>
@@ -607,54 +606,68 @@ export default function ProjectSetup({ onShowLoadModal }: ProjectSetupProps) {
             <div className="p-6 space-y-6">
               {/* Level 1: Model Cost Point Selection */}
               <div>
-                <h4 className="font-sans font-bold text-xs text-slate-700 mb-3 border-l-2 border-teal-600 pl-2">Level 1 — Pricing model</h4>
-                
+                <h4 className="font-sans font-bold text-xs text-slate-700 mb-3 border-l-2 border-teal-600 pl-2">Level 1 — Function Point Pricing Models</h4>
+
                 {/* Blended Daily Rate Input Card */}
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold uppercase text-slate-500 flex items-center gap-1.5">
-                      <Coins className="w-3.5 h-3.5 text-teal-600" />
-                      Blended Daily Rate ({currency})
-                    </label>
-                    <input
-                      id="cost-blended-rate-manual"
-                      type="number"
-                      disabled={isViewer}
-                      value={blendedRate}
-                      onChange={(e) => setBlendedRate(Number(e.target.value))}
-                      className="w-full border border-slate-200 bg-white font-sans text-xs py-1.5 px-3 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-500"
-                      placeholder="Enter Blended Rate"
-                    />
-                    <p className="text-[9px] text-slate-400 italic">
-                      {useRoles 
-                        ? "Role-based rates are active, but Level 1 blended rate value remains preserved." 
-                        : "Populates cost per point for FPA, COSMIC, and Hybrid using formula: Blended Rate / Productivity."}
-                    </p>
+                {!useRoles ? (
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-bold uppercase text-slate-500 flex items-center gap-1.5">
+                        <Coins className="w-3.5 h-3.5 text-teal-600" />
+                        Blended Daily Rate ({currency}) — Manual Entry
+                      </label>
+                      <input
+                        id="cost-blended-rate-manual"
+                        type="number"
+                        disabled={isViewer}
+                        value={blendedRate}
+                        onChange={(e) => setBlendedRate(Number(e.target.value))}
+                        className="w-full border border-slate-200 bg-white font-sans text-xs py-1.5 px-3 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-500"
+                        placeholder="Enter Blended Rate"
+                      />
+                      <p className="text-[9px] text-slate-400 italic">
+                        Populates cost per point for FPA, COSMIC, and Hybrid using formula: <span className="font-semibold font-mono">Blended Rate / Productivity</span>.
+                      </p>
+                    </div>
+                    <div className="bg-white border border-slate-100 rounded-lg p-3 text-slate-500 text-xs flex flex-col justify-center">
+                      <div className="font-semibold text-slate-700 flex items-center gap-1.5 text-[11px] mb-1">
+                        <Check className="w-3.5 h-3.5 text-teal-500 shrink-0" />
+                        Fallback Mode Active (Role-Based Pricing Off)
+                      </div>
+                      <p className="text-[10px] text-slate-400 leading-normal">
+                        Your entered Blended Daily Rate is automatically divided by each model's Level 2 Productivity rate to compute/populate its corresponding cost per point below.
+                      </p>
+                    </div>
                   </div>
-                  <div className="bg-white border border-slate-100 rounded-lg p-3 text-slate-500 text-xs flex flex-col justify-center">
-                    {useRoles ? (
-                      <>
-                        <div className="font-semibold text-indigo-800 flex items-center gap-1.5 text-[11px] mb-1">
-                          <Sparkles className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                          Role-Based Pricing Active (Level 3 Connected)
-                        </div>
-                        <p className="text-[10px] text-slate-450 leading-normal">
-                          Model cost per point rates are derived from the configured daily rates and allocations of your roles below. The manual blended rate is preserved.
-                        </p>
-                      </>
-                    ) : (
-                      <>
-                        <div className="font-semibold text-slate-700 flex items-center gap-1.5 text-[11px] mb-1">
-                          <Check className="w-3.5 h-3.5 text-teal-500 shrink-0" />
-                          Fallback Mode Active (Role-Based Pricing Off)
-                        </div>
-                        <p className="text-[10px] text-slate-450 leading-normal">
-                          Your entered Blended Daily Rate is automatically divided by each model's Level 2 Productivity rate to compute/populate its corresponding cost per point below.
-                        </p>
-                      </>
-                    )}
+                ) : (
+                  <div className="bg-indigo-50/50 border border-indigo-150 rounded-xl p-4 mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-bold uppercase text-indigo-700 flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                        Blended Daily Rate ({currency}) — Role-Based Derived
+                      </label>
+                      <input
+                        id="cost-blended-rate-derived"
+                        type="number"
+                        disabled={true}
+                        value={derived.blendedRateWithProfit}
+                        className="w-full border border-indigo-150 bg-indigo-50/70 font-sans font-semibold text-indigo-800 text-xs py-1.5 px-3 rounded-lg focus:outline-none"
+                      />
+                      <p className="text-[9px] text-indigo-700 italic">
+                        Calculated automatically using Level 3 Roles Squad + 40% profit margin as the baseline.
+                      </p>
+                    </div>
+                    <div className="bg-white border border-indigo-100 rounded-lg p-3 text-slate-650 text-xs flex flex-col justify-center">
+                      <div className="font-semibold text-indigo-800 flex items-center gap-1.5 text-[11px] mb-1">
+                        <Sparkles className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                        Role-Based Pricing Active (Level 3 Connected)
+                      </div>
+                      <p className="text-[10px] text-slate-450 leading-normal">
+                        Model cost per point rates are derived from the configured daily rates and allocations of your roles below.
+                      </p>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-1">
@@ -928,7 +941,7 @@ export default function ProjectSetup({ onShowLoadModal }: ProjectSetupProps) {
 
                     <div className="flex items-center justify-between border-t border-slate-200 pt-3">
                       <span className="text-xs text-slate-400">Total Allocation Weight Check:</span>
-                      <span 
+                      <span
                         id="role-sum-alloc"
                         className={`text-xs font-bold ${isAllocationValid ? 'text-emerald-600' : 'text-rose-500 animate-pulse'}`}
                       >
@@ -942,7 +955,7 @@ export default function ProjectSetup({ onShowLoadModal }: ProjectSetupProps) {
                         <Users2 className="w-4 h-4 text-teal-650" />
                         <span>Resource Headcount & Sourcing Summary</span>
                       </div>
-                      
+
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono text-[11px]">
                         <div className="bg-white border border-teal-100 p-2.5 rounded-lg shadow-2xs">
                           <span className="text-slate-400 block uppercase font-bold text-[9px] mb-0.5">Onsite Qty</span>
@@ -980,17 +993,17 @@ export default function ProjectSetup({ onShowLoadModal }: ProjectSetupProps) {
                       <div className="bg-white p-2.5 border border-teal-100 rounded-lg text-[10px] text-slate-500 leading-relaxed space-y-1">
                         <span className="text-teal-850 font-bold uppercase block text-[8px] tracking-wider mb-0.5">★ Architectural Loading Rule</span>
                         <p>
-                          Your total headcount is determined solely by the location buckets (<strong className="text-slate-700">Onsite + Offshore + Nearshore</strong>). 
+                          Your total headcount is determined solely by the location buckets (<strong className="text-slate-700">Onsite + Offshore + Nearshore</strong>).
                           The <strong className="text-slate-700">Employees Qty</strong> field designates the sourcing type of those resources (i.e., of the total allocated, how many are direct company employees vs. external contractors). It does <span className="font-bold text-rose-600">not</span> add additional count or duplicate your team size.
                         </p>
                         {roles.some(r => {
                           const totalGeo = (r.resources_onsite || 0) + (r.resources_offshore || 0) + (r.resources_nearshore || 0);
                           return (r.resources_employee || 0) > totalGeo;
                         }) && (
-                          <div className="mt-1.5 p-1.5 bg-rose-50 border border-rose-100 text-rose-750 font-bold rounded flex items-center gap-1 text-[9px]">
-                            <span>⚠️ Sourcing warning: Employee quantity exceeds geographical allocation on one or more roles.</span>
-                          </div>
-                        )}
+                            <div className="mt-1.5 p-1.5 bg-rose-50 border border-rose-100 text-rose-750 font-bold rounded flex items-center gap-1 text-[9px]">
+                              <span>⚠️ Sourcing warning: Employee quantity exceeds geographical allocation on one or more roles.</span>
+                            </div>
+                          )}
                       </div>
                     </div>
                   </div>
@@ -1017,7 +1030,7 @@ export default function ProjectSetup({ onShowLoadModal }: ProjectSetupProps) {
       </form>
 
       {showCreateModal && (
-        <CreateProjectModal 
+        <CreateProjectModal
           onClose={() => setShowCreateModal(false)}
         />
       )}

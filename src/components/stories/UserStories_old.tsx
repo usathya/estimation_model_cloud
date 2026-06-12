@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import mammoth from 'mammoth';
-import { useProject } from '../../context/ProjectContext';
-import { useAuth } from '../../context/AuthContext';
-import { UserStory } from '../../types';
-import { 
-  Keyboard, 
-  UploadCloud, 
-  Settings2, 
-  HelpCircle, 
-  Play, 
-  Loader2, 
-  AlertCircle, 
-  Download, 
-  Trash2, 
-  Plus, 
-  Edit3, 
-  Cpu, 
-  Flame, 
-  Globe, 
+import { useProject } from '../../context/ProjectContext.js';
+import { useAuth } from '../../context/AuthContext.js';
+import { UserStory } from '../../types.js';
+import {
+  Keyboard,
+  UploadCloud,
+  Settings2,
+  HelpCircle,
+  Play,
+  Loader2,
+  AlertCircle,
+  Download,
+  Trash2,
+  Plus,
+  Edit3,
+  Cpu,
+  Flame,
+  Globe,
   Database,
   CheckCircle,
   Sparkles,
@@ -35,29 +35,13 @@ interface UserStoriesProps {
   // no extra props needed
 }
 
-export default function UserStories({}: UserStoriesProps) {
+export default function UserStories({ }: UserStoriesProps) {
   const { currentProject, setProjectScope, deleteUserStory } = useProject();
   const { isViewer, profile, updateProfile } = useAuth();
 
   const [activeSubTab, setActiveSubTab] = useState<'manual' | 'upload' | 'jira' | 'azure' | 'ai-generator'>('manual');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingStory, setEditingStory] = useState<UserStory | null>(null);
-
-  const [editRole, setEditRole] = useState('');
-  const [editGoal, setEditGoal] = useState('');
-  const [editBenefit, setEditBenefit] = useState('');
-  const [editEpic, setEditEpic] = useState('');
-  const [editPriority, setEditPriority] = useState<'Medium' | 'Low' | 'High'>('Medium');
-
-  useEffect(() => {
-    if (editingStory) {
-      setEditRole(editingStory.role || '');
-      setEditGoal(editingStory.goal || '');
-      setEditBenefit(editingStory.benefit || '');
-      setEditEpic(editingStory.epic || '');
-      setEditPriority(editingStory.priority || 'Medium');
-    }
-  }, [editingStory, isEditModalOpen]);
 
   // AI Elaboration states
   const [isElaborating, setIsElaborating] = useState(false);
@@ -83,16 +67,16 @@ export default function UserStories({}: UserStoriesProps) {
   const handleFileAttach = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const filesArray = Array.from(e.target.files);
-    
+
     filesArray.forEach((file) => {
       const reader = new FileReader();
       reader.onload = (loadEvent) => {
         if (!loadEvent.target || !loadEvent.target.result) return;
         const arrayBuffer = loadEvent.target.result as ArrayBuffer;
-        
-        const isDocx = file.name.toLowerCase().endsWith('.docx') || 
-                       file.type.includes('word') || 
-                       file.type.includes('officedocument');
+
+        const isDocx = file.name.toLowerCase().endsWith('.docx') ||
+          file.type.includes('word') ||
+          file.type.includes('officedocument');
 
         if (isDocx) {
           // Client-side extraction to keep JSON payloads tiny and lightning fast
@@ -144,7 +128,7 @@ export default function UserStories({}: UserStoriesProps) {
       };
       reader.readAsArrayBuffer(file);
     });
-    
+
     e.target.value = '';
   };
 
@@ -217,12 +201,12 @@ export default function UserStories({}: UserStoriesProps) {
   const handleGenerateStoriesFromRequirements = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentProject.project || isViewer) return;
-    
+
     if (attachedFiles.length === 0 && !requirementsText.trim()) {
       setGenerationError('Please provide raw requirements notes or attach at least one document (.docx/.pdf).');
       return;
     }
-    
+
     setGenerationLoading(true);
     setGenerationError('');
     try {
@@ -248,7 +232,7 @@ export default function UserStories({}: UserStoriesProps) {
           })
         });
       }
-      
+
       if (res.ok) {
         const data = await res.json();
         setProjectScope(prev => ({
@@ -413,7 +397,7 @@ export default function UserStories({}: UserStoriesProps) {
   // --- SEQL ANALYSIS FLOW (respect 200ms delay & block loop - Prompt 4) ---
   const handleAnalyseStory = async (storyId: string) => {
     if (isViewer) return;
-    
+
     // Set status to analysing
     setProjectScope(prev => ({
       ...prev,
@@ -534,7 +518,7 @@ export default function UserStories({}: UserStoriesProps) {
       if (res.ok) {
         const data = await res.json();
         setElaboratedText(data.elaboration);
-        
+
         // Update story inside project scope
         setProjectScope(prev => ({
           ...prev,
@@ -595,7 +579,7 @@ export default function UserStories({}: UserStoriesProps) {
       });
       if (res.ok) {
         const data = await res.json();
-        
+
         // Update project scope locally
         setProjectScope(prev => {
           let updatedStories = [...prev.stories];
@@ -633,10 +617,10 @@ export default function UserStories({}: UserStoriesProps) {
   const handleCSVExport = () => {
     // Basic flat stories summary CSV payload
     const headers = 'Story ID,Domain,Goal,Benefit,Epic,Priority,AI Status\n';
-    const rows = currentProject.stories.map(s => 
+    const rows = currentProject.stories.map(s =>
       `"${s.story_id}","${s.role}","${s.goal.replace(/"/g, '""')}","${s.benefit.replace(/"/g, '""')}","${s.epic}","${s.priority}","${s.ai_status}"`
     ).join('\n');
-    
+
     const blob = new Blob([headers + rows], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -668,27 +652,25 @@ export default function UserStories({}: UserStoriesProps) {
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
-      
+
       {/* 4 Ingestion tabs - Section A, B, C, D */}
       <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
         <div className="flex bg-slate-50 border-b border-slate-200 text-xs">
           <button
             id="subtab-btn-manual"
             onClick={() => setActiveSubTab('manual')}
-            className={`flex items-center gap-2 px-5 py-3 font-semibold border-r border-slate-200 transition-colors cursor-pointer ${
-              activeSubTab === 'manual' ? 'bg-white text-teal-600 border-t-2 border-t-teal-600' : 'text-slate-500 hover:text-slate-900'
-            }`}
+            className={`flex items-center gap-2 px-5 py-3 font-semibold border-r border-slate-200 transition-colors cursor-pointer ${activeSubTab === 'manual' ? 'bg-white text-teal-600 border-t-2 border-t-teal-600' : 'text-slate-500 hover:text-slate-900'
+              }`}
           >
             <Keyboard className="w-4 h-4" />
             <span>Manual Entry</span>
           </button>
-          
+
           <button
             id="subtab-btn-upload"
             onClick={() => setActiveSubTab('upload')}
-            className={`flex items-center gap-2 px-5 py-3 font-semibold border-r border-slate-200 transition-colors cursor-pointer ${
-              activeSubTab === 'upload' ? 'bg-white text-teal-600 border-t-2 border-t-teal-600' : 'text-slate-500 hover:text-slate-900'
-            }`}
+            className={`flex items-center gap-2 px-5 py-3 font-semibold border-r border-slate-200 transition-colors cursor-pointer ${activeSubTab === 'upload' ? 'bg-white text-teal-600 border-t-2 border-t-teal-600' : 'text-slate-500 hover:text-slate-900'
+              }`}
           >
             <UploadCloud className="w-4 h-4" />
             <span>Upload File (CSV/TXT)</span>
@@ -697,9 +679,8 @@ export default function UserStories({}: UserStoriesProps) {
           <button
             id="subtab-btn-jira"
             onClick={() => setActiveSubTab('jira')}
-            className={`flex items-center gap-2 px-5 py-3 font-semibold border-r border-slate-200 transition-colors cursor-pointer ${
-              activeSubTab === 'jira' ? 'bg-white text-teal-600 border-t-2 border-t-teal-600' : 'text-slate-500 hover:text-slate-900'
-            }`}
+            className={`flex items-center gap-2 px-5 py-3 font-semibold border-r border-slate-200 transition-colors cursor-pointer ${activeSubTab === 'jira' ? 'bg-white text-teal-600 border-t-2 border-t-teal-600' : 'text-slate-500 hover:text-slate-900'
+              }`}
           >
             <Globe className="w-4 h-4 text-[#0052CC]" />
             <span>Jira Connector (Proxy API)</span>
@@ -708,9 +689,8 @@ export default function UserStories({}: UserStoriesProps) {
           <button
             id="subtab-btn-azure"
             onClick={() => setActiveSubTab('azure')}
-            className={`flex items-center gap-2 px-5 py-3 font-semibold border-r border-slate-200 transition-colors cursor-pointer ${
-              activeSubTab === 'azure' ? 'bg-white text-teal-600 border-t-2 border-t-teal-600' : 'text-slate-500 hover:text-slate-900'
-            }`}
+            className={`flex items-center gap-2 px-5 py-3 font-semibold border-r border-slate-200 transition-colors cursor-pointer ${activeSubTab === 'azure' ? 'bg-white text-teal-600 border-t-2 border-t-teal-600' : 'text-slate-500 hover:text-slate-900'
+              }`}
           >
             <Link2 className="w-4 h-4 text-[#0078D4]" />
             <span>Azure DevOps API</span>
@@ -719,9 +699,8 @@ export default function UserStories({}: UserStoriesProps) {
           <button
             id="subtab-btn-ai-generator"
             onClick={() => setActiveSubTab('ai-generator')}
-            className={`flex items-center gap-2 px-5 py-3 font-semibold transition-colors cursor-pointer ${
-              activeSubTab === 'ai-generator' ? 'bg-white text-teal-600 border-t-2 border-t-teal-600' : 'text-slate-500 hover:text-slate-900'
-            }`}
+            className={`flex items-center gap-2 px-5 py-3 font-semibold transition-colors cursor-pointer ${activeSubTab === 'ai-generator' ? 'bg-white text-teal-600 border-t-2 border-t-teal-600' : 'text-slate-500 hover:text-slate-900'
+              }`}
           >
             <Sparkles className="w-4 h-4 text-purple-500 animate-pulse" />
             <span className="font-bold">AI Story Generator</span>
@@ -835,7 +814,7 @@ export default function UserStories({}: UserStoriesProps) {
               <UploadCloud className="w-12 h-12 text-slate-400 mx-auto mb-3" />
               <h4 className="font-sans font-bold text-slate-700 text-xs mb-1">Drag and Drop Document Raw files (CSV, TXT)</h4>
               <p className="font-sans text-[11px] text-slate-400 max-w-sm mx-auto mb-4">Upload standard structured stories CSVs, or drop unstructured scope documents to break down narratives sequentially.</p>
-              
+
               <div className="relative inline-block">
                 <input
                   type="file"
@@ -966,8 +945,8 @@ export default function UserStories({}: UserStoriesProps) {
                 <span className="text-xs font-bold font-sans">Gemini AI Agile Backlog Builder</span>
               </div>
               <p className="text-slate-600 text-xs leading-relaxed max-w-3xl">
-                Paste your product scope documentation, raw feature requests, or technical requirement notes. 
-                Our underlying <strong>Gemini 3.5-flash</strong> model will decompose them, identify logical actors, 
+                Paste your product scope documentation, raw feature requests, or technical requirement notes.
+                Our underlying <strong>Gemini 3.5-flash</strong> model will decompose them, identify logical actors,
                 draft narrative goals with benefits, structure their target epic blocks, and populate them to your estimation list instantly.
               </p>
 
@@ -996,19 +975,19 @@ export default function UserStories({}: UserStoriesProps) {
                     </span>
                     <span className="text-[9px] font-mono text-slate-400">Context is retained across documents</span>
                   </div>
-                  
+
                   <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                     <label className="flex items-center gap-2 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 border border-indigo-150 text-indigo-700 text-xs font-semibold rounded-lg shadow-sm cursor-pointer transition select-none">
                       <FileUp className="w-3.5 h-3.5" />
                       <span>Attach Documents</span>
-                      <input 
+                      <input
                         id="ai-attachment-file-input"
-                        type="file" 
-                        multiple 
-                        accept=".pdf,.docx" 
+                        type="file"
+                        multiple
+                        accept=".pdf,.docx"
                         onChange={handleFileAttach}
                         disabled={generationLoading || isViewer}
-                        className="hidden" 
+                        className="hidden"
                       />
                     </label>
                     <p className="text-[10px] text-slate-500 leading-normal">
@@ -1052,7 +1031,7 @@ export default function UserStories({}: UserStoriesProps) {
                       className="w-full border border-slate-200 bg-white font-sans text-xs py-1.5 px-3 rounded"
                     />
                   </div>
-                  
+
                   <div className="flex items-end">
                     {!isViewer && (
                       <button
@@ -1103,10 +1082,10 @@ export default function UserStories({}: UserStoriesProps) {
             </div>
             {/* Staggered progress scale bar */}
             <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden mt-2">
-              <div 
+              <div
                 id="analysis-progress-bar"
                 style={{ width: `${(analysisProgress.current / analysisProgress.total) * 100}%` }}
-                className="bg-teal-500 h-full transition-all duration-300 rounded-full" 
+                className="bg-teal-500 h-full transition-all duration-300 rounded-full"
               />
             </div>
           </div>
@@ -1144,7 +1123,7 @@ export default function UserStories({}: UserStoriesProps) {
             <ListOrdered className="w-5 h-5 text-slate-600" />
             <h3 className="font-sans font-extrabold text-sm text-slate-800 tracking-tight">Requirement Inventory Log</h3>
           </div>
-          
+
           <div className="flex items-center gap-2 flex-wrap">
             {total > 0 && !isViewer && (
               <button
@@ -1155,7 +1134,7 @@ export default function UserStories({}: UserStoriesProps) {
                 Clear Scope
               </button>
             )}
-            
+
             {total > 0 && (
               <button
                 id="btn-stories-export-csv"
@@ -1217,26 +1196,24 @@ export default function UserStories({}: UserStoriesProps) {
                     </td>
                     <td className="py-3 px-3 w-24 truncate text-slate-500" title={story.epic}>{story.epic}</td>
                     <td className="py-3 px-3 text-center">
-                      <span className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-bold ${
-                        story.priority === 'High' 
-                          ? 'bg-rose-100 text-rose-800' 
-                          : story.priority === 'Medium' 
-                            ? 'bg-amber-100 text-amber-800' 
+                      <span className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-bold ${story.priority === 'High'
+                          ? 'bg-rose-100 text-rose-800'
+                          : story.priority === 'Medium'
+                            ? 'bg-amber-100 text-amber-800'
                             : 'bg-emerald-100 text-emerald-800'
-                      }`}>
+                        }`}>
                         {story.priority}
                       </span>
                     </td>
                     <td className="py-3 px-3 text-center">
-                      <span className={`inline-block text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${
-                        story.source === 'jira' 
-                          ? 'bg-blue-100 text-blue-800' 
-                          : story.source === 'azure' 
-                            ? 'bg-teal-100 text-teal-850' 
-                            : story.source === 'file' 
-                              ? 'bg-purple-100 text-purple-800' 
+                      <span className={`inline-block text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${story.source === 'jira'
+                          ? 'bg-blue-100 text-blue-800'
+                          : story.source === 'azure'
+                            ? 'bg-teal-100 text-teal-850'
+                            : story.source === 'file'
+                              ? 'bg-purple-100 text-purple-800'
                               : 'bg-slate-105 text-slate-700'
-                      }`}>
+                        }`}>
                         {story.source}
                       </span>
                     </td>
@@ -1273,7 +1250,7 @@ export default function UserStories({}: UserStoriesProps) {
                             <Play className="w-2.5 h-2.5 text-indigo-550" />
                             <span>Run</span>
                           </button>
-                          
+
                           <button
                             id={`action-elaborate-${story.id}`}
                             onClick={() => handleElaborateStory(story)}
@@ -1339,9 +1316,9 @@ export default function UserStories({}: UserStoriesProps) {
                   <input
                     id="edit-story-role"
                     type="text"
-                    value={editRole}
-                    onChange={(e) => setEditRole(e.target.value)}
-                    className="w-full border border-slate-200 bg-slate-55 p-1.5 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                    defaultValue={editingStory.role}
+                    onChange={(e) => editingStory.role = e.target.value}
+                    className="w-full border border-slate-200 bg-slate-50 p-1.5 rounded"
                   />
                 </div>
                 <div className="col-span-2">
@@ -1349,9 +1326,9 @@ export default function UserStories({}: UserStoriesProps) {
                   <input
                     id="edit-story-goal"
                     type="text"
-                    value={editGoal}
-                    onChange={(e) => setEditGoal(e.target.value)}
-                    className="w-full border border-slate-200 bg-slate-55 p-1.5 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                    defaultValue={editingStory.goal}
+                    onChange={(e) => editingStory.goal = e.target.value}
+                    className="w-full border border-slate-200 bg-slate-50 p-1.5 rounded"
                   />
                 </div>
               </div>
@@ -1361,9 +1338,9 @@ export default function UserStories({}: UserStoriesProps) {
                 <input
                   id="edit-story-benefit"
                   type="text"
-                  value={editBenefit}
-                  onChange={(e) => setEditBenefit(e.target.value)}
-                  className="w-full border border-slate-200 bg-slate-55 p-1.5 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  defaultValue={editingStory.benefit}
+                  onChange={(e) => editingStory.benefit = e.target.value}
+                  className="w-full border border-slate-200 bg-slate-50 p-1.5 rounded"
                 />
               </div>
 
@@ -1373,18 +1350,18 @@ export default function UserStories({}: UserStoriesProps) {
                   <input
                     id="edit-story-epic"
                     type="text"
-                    value={editEpic}
-                    onChange={(e) => setEditEpic(e.target.value)}
-                    className="w-full border border-slate-200 bg-slate-55 p-1.5 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                    defaultValue={editingStory.epic}
+                    onChange={(e) => editingStory.epic = e.target.value}
+                    className="w-full border border-slate-200 bg-slate-50 p-1.5 rounded"
                   />
                 </div>
                 <div>
                   <label className="text-[10px] font-mono uppercase block text-slate-450 font-bold mb-1">Priority</label>
                   <select
                     id="edit-story-priority"
-                    value={editPriority}
-                    onChange={(e: any) => setEditPriority(e.target.value)}
-                    className="w-full border border-slate-200 bg-slate-55 p-1.5 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                    defaultValue={editingStory.priority}
+                    onChange={(e: any) => editingStory.priority = e.target.value}
+                    className="w-full border border-slate-200 bg-slate-50 p-1.5 rounded"
                   >
                     <option value="High">High</option>
                     <option value="Medium">Medium</option>
@@ -1397,11 +1374,11 @@ export default function UserStories({}: UserStoriesProps) {
                 <button
                   id="edit-story-submit-btn"
                   onClick={() => handleEditSave({
-                    role: editRole,
-                    goal: editGoal,
-                    benefit: editBenefit,
-                    epic: editEpic,
-                    priority: editPriority
+                    role: editingStory.role,
+                    goal: editingStory.goal,
+                    benefit: editingStory.benefit,
+                    epic: editingStory.epic,
+                    priority: editingStory.priority
                   })}
                   className="bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs py-2 px-5 rounded-lg shadow cursor-pointer ml-auto"
                 >
@@ -1533,13 +1510,12 @@ export default function UserStories({}: UserStoriesProps) {
                   {proposedSplits.map((p, i) => (
                     <div key={i} className="border border-slate-200 hover:border-slate-300 p-3 bg-slate-50/40 rounded-lg relative transition">
                       <div className="absolute top-3 right-3 flex items-center gap-1.5">
-                        <span className={`px-1.5 py-0.5 rounded text-[8px] font-extrabold border ${
-                          p.priority === 'High' 
-                            ? 'bg-rose-50 text-rose-700 border-rose-150' 
-                            : p.priority === 'Medium' 
-                              ? 'bg-amber-50 text-amber-700 border-amber-150' 
+                        <span className={`px-1.5 py-0.5 rounded text-[8px] font-extrabold border ${p.priority === 'High'
+                            ? 'bg-rose-50 text-rose-700 border-rose-150'
+                            : p.priority === 'Medium'
+                              ? 'bg-amber-50 text-amber-700 border-amber-150'
                               : 'bg-slate-50 text-slate-600 border-slate-150'
-                        }`}>
+                          }`}>
                           {p.priority}
                         </span>
                         <span className="px-1.5 py-0.5 rounded text-[8px] font-bold bg-slate-100 text-slate-500">
@@ -1584,8 +1560,8 @@ export default function UserStories({}: UserStoriesProps) {
                       </div>
                     </div>
                     <div className="text-[11px] text-slate-450 flex items-center p-2 leading-relaxed">
-                      {splitAction === 'replace' 
-                        ? `This will import the split stories with serial letters (e.g. ${splittingParentStory.story_id}-A, B, C) and cleanly remove parent ${splittingParentStory.story_id} to keep your estimates accurate.` 
+                      {splitAction === 'replace'
+                        ? `This will import the split stories with serial letters (e.g. ${splittingParentStory.story_id}-A, B, C) and cleanly remove parent ${splittingParentStory.story_id} to keep your estimates accurate.`
                         : `This will keep parent ${splittingParentStory.story_id} intact and add the new split sub-stories as extra backlog items.`
                       }
                     </div>

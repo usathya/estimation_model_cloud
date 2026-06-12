@@ -28,7 +28,7 @@ export function toValidUuid(input: string): string {
   if (uuidRegex.test(input)) {
     return input.toLowerCase();
   }
-  
+
   // Hash the input string using MD5 to produce a deterministic 32-character hex sequence
   const hash = createHash('md5').update(input).digest('hex');
   const part1 = hash.substring(0, 8);
@@ -36,7 +36,7 @@ export function toValidUuid(input: string): string {
   const part3 = '4' + hash.substring(13, 16); // force version 4 representation
   const part4 = ((parseInt(hash.substring(16, 20), 16) & 0x3fff) | 0x8000).toString(16).padStart(4, '0'); // force variant
   const part5 = hash.substring(20, 32);
-  
+
   return `${part1}-${part2}-${part3}-${part4}-${part5}`.toLowerCase();
 }
 
@@ -307,7 +307,7 @@ export async function resilientQuery<T>(
       console.warn('★ [SUPABASE] Exception in query, falling back to local JSON data. Exception details:', err);
     }
   }
-  
+
   // Local fallback
   const result = localAction();
   if (writeToLocalOnChanges) {
@@ -334,7 +334,7 @@ export async function resilientWrite<T>(
           // ignore local sync mishaps
         }
         if (data !== null) return data;
-        return localAction(); 
+        return localAction();
       }
       console.warn('★ [SUPABASE] Write failed, using local database. Error:', error);
     } catch (err) {
@@ -381,7 +381,7 @@ export async function testSupabaseConnectionDetail() {
     'cost_config', 'system_config', 'cf_ai_usage', 'groq_usage', 'gemini_usage',
     'ai_errors', 'overhead_templates'
   ];
-  
+
   for (const table of tables) {
     try {
       const { error } = await client.from(table).select('*').limit(1);
@@ -402,8 +402,8 @@ export async function testSupabaseConnectionDetail() {
     connection_endpoint: process.env.SUPABASE_URL,
     results,
     isConfigCompleted,
-    reason: isConfigCompleted 
-      ? 'Fully integrated and synced with production!' 
+    reason: isConfigCompleted
+      ? 'Fully integrated and synced with production!'
       : 'Supabase connected, but some database tables are missing. Please run the migration script.'
   };
 }
@@ -430,33 +430,57 @@ export async function forceSyncLocalToSupabase() {
       return;
     }
     try {
-      let { error } = await client.from(table).upsert(payload);
+      const options: any = {};
+      if (table === 'cost_config') {
+        options.onConflict = 'project_id';
+      } else if (table === 'ai_classifications') {
+        options.onConflict = 'story_id,model_type';
+      } else if (table === 'fpa_gsc_ratings') {
+        options.onConflict = 'project_id,gsc_number';
+      } else if (table === 'hybrid_scores') {
+        options.onConflict = 'story_id,criterion_id';
+      }
+
+      let { error } = await client.from(table).upsert(payload, options);
       if (error && table === 'user_stories') {
-        const isMissingColumn = error.message.includes('story_points') || 
-                                error.message.includes('column') || 
-                                error.code === '42703';
+        const isMissingColumn = error.message.includes('story_points') ||
+          error.message.includes('column') ||
+          error.code === '42703';
         if (isMissingColumn) {
           console.log(`★ [SUPABASE] Retrying sync on table [${table}] without story_points column...`);
           const strippedPayload = payload.map(({ story_points, ...rest }: any) => rest);
-          const retryRes = await client.from(table).upsert(strippedPayload);
+          const retryRes = await client.from(table).upsert(strippedPayload, options);
+          error = retryRes.error;
+        }
+      }
+      if (error && table === 'projects') {
+        const isMissingColumn = error.message.includes('actual_cost') ||
+          error.message.includes('actual_effort_days') ||
+          error.message.includes('actual_duration_months') ||
+          error.message.includes('column') ||
+          error.code === '42703';
+        if (isMissingColumn) {
+          console.log(`★ [SUPABASE] Retrying sync on table [${table}] without actual metrics columns...`);
+          const strippedPayload = payload.map(({ actual_cost, actual_effort_days, actual_duration_months, ...rest }: any) => rest);
+          const retryRes = await client.from(table).upsert(strippedPayload, options);
           error = retryRes.error;
         }
       }
       if (error && table === 'cost_config') {
-        const isMissingColumn = error.message.includes('fpa_productivity_rate') || 
-                                error.message.includes('cosmic_productivity_rate') || 
-                                error.message.includes('hybrid_productivity_rate') || 
-                                error.message.includes('column') || 
-                                error.code === '42703';
+        const isMissingColumn = error.message.includes('fpa_productivity_rate') ||
+          error.message.includes('cosmic_productivity_rate') ||
+          error.message.includes('hybrid_productivity_rate') ||
+          error.message.includes('column') ||
+          error.code === '42703';
         if (isMissingColumn) {
           console.log(`★ [SUPABASE] Retrying sync on table [${table}] without specific productivity rate columns...`);
           const strippedPayload = payload.map(({ fpa_productivity_rate, cosmic_productivity_rate, hybrid_productivity_rate, ...rest }: any) => rest);
-          const retryRes = await client.from(table).upsert(strippedPayload);
+          const retryRes = await client.from(table).upsert(strippedPayload, options);
           error = retryRes.error;
         }
       }
       if (error) {
-         logs.push(`Table [${table}] — ERROR syncing: ${error.message}`);
+        logs.push(`Table [${table}] — ERROR syncing: ${error.message}`);
       } else {
         logs.push(`Table [${table}] — Successfully synced ${payload.length} records.`);
       }
@@ -524,3 +548,4 @@ export async function forceSyncLocalToSupabase() {
 
   return { success: true, logs };
 }
+m

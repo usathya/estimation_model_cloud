@@ -19,7 +19,7 @@ import {
   Calendar,
   AlertCircle
 } from 'lucide-react';
-import { SaudiRiyalIcon } from '../icons/SaudiRiyalIcon.js';
+import { SaudiRiyalIcon } from '../icons/SaudiRiyalIcon';
 
 export default function ComparativeDashboard() {
   const { currentProject } = useProject();
@@ -31,7 +31,12 @@ export default function ComparativeDashboard() {
   const hybridMetrics = calculateHybridTotalMetrics(currentProject.stories, currentProject.criteria, currentProject.scores, currentProject.overheads);
 
   // Constants
-  const teamSize = currentProject.project?.team_size ?? 5;
+  const isRoleBased = currentProject.costConfig?.use_role_rates ?? false;
+  const rolesList = currentProject.costConfig?.roles || [];
+  const netFte = isRoleBased
+    ? rolesList.reduce((sum, r) => sum + ((r.allocation_percent || 0) / 100) * ((r.resources_onsite || 0) + (r.resources_offshore || 0) + (r.resources_nearshore || 0)), 0)
+    : 0;
+  const teamSize = (isRoleBased && netFte > 0) ? Math.round(netFte * 100) / 100 : (currentProject.project?.team_size ?? 5);
   const workDays = currentProject.costConfig?.working_days_per_month ?? 22;
 
   const fpaProd = currentProject.costConfig?.fpa_productivity_rate ?? 0.75;
