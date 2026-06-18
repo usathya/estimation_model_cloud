@@ -108,11 +108,13 @@ export async function supabaseDelete(env: EnvBindings, table: string, filters: R
   await request(env, table + buildQueryString(filters), { method: 'DELETE' })
 }
 
-export async function supabaseConnectionTest(env: EnvBindings): Promise<{ active: boolean; results: Record<string, string>; reason: string }> {
+export async function supabaseConnectionTest(env: EnvBindings): Promise<{ active: boolean; results: Record<string, string>; reason: string; connection_endpoint?: string; isConfigCompleted?: boolean }> {
   const results: Record<string, string> = {}
   if (!isSupabaseConfigured(env)) {
-    return { active: false, results, reason: 'Supabase URL or Service Role key not set.' }
+    return { active: false, results, reason: 'Supabase not configured: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY required.' }
   }
+  const url = env.SUPABASE_URL || ''
+  const masked = url ? url.replace(/\/\/[^@]+@/, '//***@') : ''
   const tables = ['user_profiles','projects','user_stories','ai_classifications','ai_overrides','fpa_gsc_ratings','cosmic_movements','hybrid_criteria','hybrid_scores','overheads','cost_config','system_config','cf_ai_usage','groq_usage','gemini_usage','ai_errors','overhead_templates']
   for (const table of tables) {
     try {
@@ -122,7 +124,8 @@ export async function supabaseConnectionTest(env: EnvBindings): Promise<{ active
       results[table] = 'ERROR'
     }
   }
-  return { active: Object.values(results).some(v => v === 'ACTIVE'), results, reason: 'Connection test completed.' }
+  const active = Object.values(results).some(v => v === 'ACTIVE')
+  return { active, results, reason: 'Connection test completed.', connection_endpoint: masked, isConfigCompleted: active }
 }
 
 export async function kvCacheGet<T>(kv: KVNamespace | undefined, key: string): Promise<T | null> {
