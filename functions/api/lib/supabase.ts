@@ -67,7 +67,11 @@ export function isSupabaseConfigured(env: EnvBindings): boolean {
 export async function supabaseSelect(env: EnvBindings, table: string, filters?: Record<string, any>, columns?: string): Promise<any[]> {
   let path = buildSelectQuery(table, columns)
   if (filters) {
-    path += buildQueryString(filters)
+    for (const [key, value] of Object.entries(filters)) {
+      if (value !== undefined && value !== null) {
+        path += `&${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+      }
+    }
   }
   return request(env, path, { method: 'GET' })
 }
