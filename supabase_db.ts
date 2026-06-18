@@ -3,15 +3,25 @@ import fs from 'fs';
 import path from 'path';
 import { createHash } from 'crypto';
 
-// Local DB file context
-const DB_FILE = path.join(process.cwd(), 'db.json');
+// Local DB file context helper
+function getDbFilePath() {
+  if (typeof process !== 'undefined' && process.cwd) {
+    try {
+      return path.join(process.cwd(), 'db.json');
+    } catch (e) {
+      return 'db.json';
+    }
+  }
+  return 'db.json';
+}
 
 function readLocalDb() {
-  if (!fs.existsSync(DB_FILE)) {
+  const dbFile = getDbFilePath();
+  if (typeof fs.existsSync !== 'function' || !fs.existsSync(dbFile)) {
     return null;
   }
   try {
-    const data = fs.readFileSync(DB_FILE, 'utf8');
+    const data = fs.readFileSync(dbFile, 'utf8');
     return JSON.parse(data);
   } catch (err) {
     console.error('Error reading db.json:', err);
@@ -260,10 +270,10 @@ export function mapAiOverrideFromDb(row: any) {
 // Supabase lazy client initialization
 let supabaseInstance: any = null;
 
-export function getSupabaseClient() {
+export function getSupabaseClient(env?: any) {
   if (!supabaseInstance) {
-    const url = process.env.SUPABASE_URL;
-    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const url = env?.SUPABASE_URL || process.env.SUPABASE_URL;
+    const key = env?.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (url && key && url !== '' && key !== '') {
       try {
         supabaseInstance = createClient(url, key, {
@@ -281,8 +291,8 @@ export function getSupabaseClient() {
   return supabaseInstance;
 }
 
-export function isSupabaseActive(): boolean {
-  return !!getSupabaseClient();
+export function isSupabaseActive(env?: any): boolean {
+  return !!getSupabaseClient(env);
 }
 
 /**
@@ -291,9 +301,10 @@ export function isSupabaseActive(): boolean {
 export async function resilientQuery<T>(
   supabaseAction: (client: any) => Promise<{ data: T | null; error: any }>,
   localAction: () => T,
-  writeToLocalOnChanges?: (data: T) => void
+  writeToLocalOnChanges?: (data: T) => void,
+  env?: any
 ): Promise<T> {
-  const client = getSupabaseClient();
+  const client = getSupabaseClient(env);
   if (client) {
     try {
       const { data, error } = await supabaseAction(client);
@@ -321,9 +332,10 @@ export async function resilientQuery<T>(
  */
 export async function resilientWrite<T>(
   supabaseAction: (client: any) => Promise<{ data: T | null; error: any }>,
-  localAction: () => T
+  localAction: () => T,
+  env?: any
 ): Promise<T> {
-  const client = getSupabaseClient();
+  const client = getSupabaseClient(env);
   if (client) {
     try {
       const { data, error } = await supabaseAction(client);
@@ -347,8 +359,8 @@ export async function resilientWrite<T>(
 /**
  * Helper endpoint to retrieve Supabase status for the admin diagnostic screen.
  */
-export async function testSupabaseConnectionDetail() {
-  const client = getSupabaseClient();
+export async function testSupabaseConnectionDetail(env?: any) {
+  const client = getSupabaseClient(env);
   const results: Record<string, 'ACTIVE' | 'ERROR' | 'MISSING'> = {
     connection: 'MISSING',
     user_profiles: 'MISSING',
@@ -396,10 +408,11 @@ export async function testSupabaseConnectionDetail() {
   }
 
   const isConfigCompleted = Object.values(results).every(status => status === 'ACTIVE');
+  const activeUrl = env?.SUPABASE_URL || process.env.SUPABASE_URL;
 
   return {
     active: true,
-    connection_endpoint: process.env.SUPABASE_URL,
+    connection_endpoint: activeUrl,
     results,
     isConfigCompleted,
     reason: isConfigCompleted
@@ -409,20 +422,239 @@ export async function testSupabaseConnectionDetail() {
 }
 
 /**
+ * processes pending changes queued when Supabase is offline/unreachable.
+ */
+export async function processSyncQueue(db: any, env?: any): Promise<{ success: boolean; logs: string[] }> {
+  const client = getSupabaseClient(env);
+  const logs: string[] = [];
+  if (!client) {
+    return { success: false, logs: ['Supabase client not active. Cannot process sync queue.'] };
+  }
+
+  db.sync_queue = db.sync_queue || [];
+  if (db.sync_queue.length === 0) {
+    db.needs_sync = false;
+    return { success: true, logs: ['Sync queue is empty.'] };
+  }
+
+  logs.push(`Starting processing of sync queue containing ${db.sync_queue.length} items...`);
+  let successCount = 0;
+  
+  // Clone the queue and process items sequentially
+  const queue = [...db.sync_queue];
+  for (let i = 0; i < queue.length; i++) {
+    const item = queue[i];
+    try {
+      logs.push(`Syncing table [${item.table}]...`);
+      const { error } = await client.from(item.table).upsert(item.payload, item.options || {});
+      if (error) {
+        logs.push(`Failed to sync table [${item.table}]: ${error.message}`);
+        // Stop processing to preserve order of operations
+        break;
+      } else {
+        logs.push(`Successfully synced table [${item.table}].`);
+        // Remove item from DB sync_queue
+        db.sync_queue.shift();
+        successCount++;
+      }
+    } catch (err: any) {
+      logs.push(`Exception syncing table [${item.table}]: ${err.message || err}`);
+      break;
+    }
+  }
+
+  // Update needs_sync flag
+  db.needs_sync = db.sync_queue.length > 0;
+
+  // Persist updated database cache
+  if (env?.ESTIMATION_DB) {
+    await env.ESTIMATION_DB.put("estimation_db_json", JSON.stringify(db));
+  } else {
+    const dbFile = getDbFilePath();
+    if (typeof fs.writeFileSync === 'function') {
+      try {
+        fs.writeFileSync(dbFile, JSON.stringify(db, null, 2), 'utf8');
+      } catch (e) {
+        console.error('Failed to write db.json on local filesystem', e);
+      }
+    }
+  }
+
+  logs.push(`Sync queue processing finished. Synced: ${successCount}, Remaining: ${db.sync_queue.length}.`);
+  return { success: db.sync_queue.length === 0, logs };
+}
+
+// Background sync edits to Supabase in the background (or queue on failure)
+export async function syncChangesToSupabase(db: any, tablesToSync?: string[], env?: any) {
+  const client = getSupabaseClient(env);
+  
+  // Initialize sync_queue if it doesn't exist
+  db.sync_queue = db.sync_queue || [];
+
+  if (!client) {
+    console.log('★ [SUPABASE] Client not active. Queueing sync operations.');
+    db.needs_sync = true;
+    return;
+  }
+
+  try {
+    const profileDb = db.user_profile ? mapUserProfileToDb(db.user_profile) : null;
+    const projectsDb = (db.projects || []).map(mapProjectToDb).filter(Boolean);
+    const storiesDb = (db.user_stories || []).map(mapUserStoryToDb).filter(Boolean);
+    const classifsDb = (db.ai_classifications || []).map(mapAiClassificationToDb).filter(Boolean);
+    const overridesDb = (db.ai_overrides || []).map(mapAiOverrideToDb).filter(Boolean);
+    const movementsDb = (db.cosmic_movements || []).map(mapCosmicMovementToDb).filter(Boolean);
+    const criteriaDb = (db.hybrid_criteria || []).map(mapHybridCriterionToDb).filter(Boolean);
+    const scoresDb = (db.hybrid_scores || []).map(mapHybridScoreToDb).filter(Boolean);
+    const overheadsDb = (db.overheads || []).map(mapOverheadToDb).filter(Boolean);
+    const costConfigsDb = (db.cost_configs || []).map(mapCostConfigToDb).filter(Boolean);
+    const ratingsDb = (db.fpa_gsc_ratings || []).map(mapFpaGscRatingToDb).filter(Boolean);
+    const systemConfigDb = db.system_config ? mapSystemConfigToDb(db.system_config) : null;
+
+    const baseTasks = [
+      { name: 'user_profiles', payload: profileDb ? [profileDb] : null },
+      { name: 'projects', payload: projectsDb.length > 0 ? projectsDb : null },
+      { name: 'user_stories', payload: storiesDb.length > 0 ? storiesDb : null },
+      { name: 'ai_classifications', payload: classifsDb.length > 0 ? classifsDb : null },
+      { name: 'ai_overrides', payload: overridesDb.length > 0 ? overridesDb : null },
+      { name: 'cosmic_movements', payload: movementsDb.length > 0 ? movementsDb : null },
+      { name: 'hybrid_criteria', payload: criteriaDb.length > 0 ? criteriaDb : null },
+      { name: 'hybrid_scores', payload: scoresDb.length > 0 ? scoresDb : null },
+      { name: 'overheads', payload: overheadsDb.length > 0 ? overheadsDb : null },
+      { name: 'cost_config', payload: costConfigsDb.length > 0 ? costConfigsDb : null },
+      { name: 'fpa_gsc_ratings', payload: ratingsDb.length > 0 ? ratingsDb : null },
+      { name: 'system_config', payload: systemConfigDb ? [systemConfigDb] : null }
+    ];
+
+    const tasks = baseTasks.filter(task => !tablesToSync || tablesToSync.includes(task.name));
+
+    let localDbWriteNeeded = false;
+
+    for (const task of tasks) {
+      if (task.payload) {
+        try {
+          const options: any = {};
+          if (task.name === 'cost_config') {
+            options.onConflict = 'project_id';
+          } else if (task.name === 'ai_classifications') {
+            options.onConflict = 'story_id,model_type';
+          } else if (task.name === 'fpa_gsc_ratings') {
+            options.onConflict = 'project_id,gsc_number';
+          } else if (task.name === 'hybrid_scores') {
+            options.onConflict = 'story_id,criterion_id';
+          }
+
+          let { error } = await client.from(task.name).upsert(task.payload, options);
+          if (error && task.name === 'user_stories') {
+            const isMissingColumn = error.message.includes('story_points') || 
+                                    error.message.includes('column') || 
+                                    error.code === '42703';
+            if (isMissingColumn) {
+              console.log('★ [SUPABASE] Retrying user_stories upsert without story_points column...');
+              const strippedStories = task.payload.map(({ story_points, ...rest }: any) => rest);
+              const retryRes = await client.from(task.name).upsert(strippedStories, options);
+              error = retryRes.error;
+            }
+          }
+          if (error && task.name === 'projects') {
+            const isMissingColumn = error.message.includes('actual_cost') || 
+                                    error.message.includes('actual_effort_days') || 
+                                    error.message.includes('actual_duration_months') || 
+                                    error.message.includes('column') || 
+                                    error.code === '42703';
+            if (isMissingColumn) {
+              console.log('★ [SUPABASE] Retrying projects upsert without actual_cost/effort/duration metrics...');
+              const strippedProjects = task.payload.map(({ actual_cost, actual_effort_days, actual_duration_months, ...rest }: any) => rest);
+              const retryRes = await client.from(task.name).upsert(strippedProjects, options);
+              error = retryRes.error;
+            }
+          }
+          if (error && task.name === 'cost_config') {
+            const isMissingColumn = error.message.includes('fpa_productivity_rate') || 
+                                    error.message.includes('cosmic_productivity_rate') || 
+                                    error.message.includes('hybrid_productivity_rate') || 
+                                    error.message.includes('blended_rate') || 
+                                    error.message.includes('column') || 
+                                    error.code === '42703';
+            if (isMissingColumn) {
+              console.log('★ [SUPABASE] Retrying cost_config upsert without specific columns...');
+              const strippedConfigs = task.payload.map(({ fpa_productivity_rate, cosmic_productivity_rate, hybrid_productivity_rate, blended_rate, ...rest }: any) => rest);
+              const retryRes = await client.from(task.name).upsert(strippedConfigs, options);
+              error = retryRes.error;
+            }
+          }
+          if (error) {
+            console.error(`★ [SUPABASE-WRITE-ERROR] Failed to upsert table ${task.name}:`, error.message, error.details || '');
+            // Queue write failure
+            db.sync_queue.push({
+              table: task.name,
+              payload: task.payload,
+              options: options,
+              timestamp: new Date().toISOString()
+            });
+            db.needs_sync = true;
+            localDbWriteNeeded = true;
+          }
+        } catch (innerErr) {
+          console.error(`★ [SUPABASE-WRITE-EXCEPTION] Exception in upsert table ${task.name}:`, innerErr);
+          // Queue write exception
+          db.sync_queue.push({
+            table: task.name,
+            payload: task.payload,
+            options: {},
+            timestamp: new Date().toISOString()
+          });
+          db.needs_sync = true;
+          localDbWriteNeeded = true;
+        }
+      }
+    }
+
+    if (localDbWriteNeeded) {
+      // Save changes back to local db.json / KV
+      if (env?.ESTIMATION_DB) {
+        await env.ESTIMATION_DB.put("estimation_db_json", JSON.stringify(db));
+      } else {
+        const dbFile = getDbFilePath();
+        if (typeof fs.writeFileSync === 'function') {
+          try {
+            fs.writeFileSync(dbFile, JSON.stringify(db, null, 2), 'utf8');
+          } catch (e) {
+            console.error('Failed to write db.json on local filesystem', e);
+          }
+        }
+      }
+    } else {
+      console.log('★ [SUPABASE] Cloud database synchronized successfully or queue fallback completed.');
+    }
+  } catch (err) {
+    console.warn('★ [SUPABASE-WRITE-WARNING] Failed background write upload:', err);
+  }
+}
+
+/**
  * Helper to upload everything from db.json into Supabase tables (Seed & Sync).
  */
-export async function forceSyncLocalToSupabase() {
-  const client = getSupabaseClient();
+export async function forceSyncLocalToSupabase(env?: any, customDb?: any) {
+  const client = getSupabaseClient(env);
   if (!client) {
     throw new Error('Supabase client is not initialized. Provide environment keys first.');
   }
 
-  const db = readLocalDb();
+  // Use customDb if provided (from KV/cache), otherwise read local db.json file
+  const db = customDb || readLocalDb();
   if (!db) {
     throw new Error('Local db.json file is absent or corrupted.');
   }
 
   const logs: string[] = [];
+
+  // First process sync queue if there is one
+  if (db.sync_queue && db.sync_queue.length > 0) {
+    logs.push('Processing pending sync queue first...');
+    const syncRes = await processSyncQueue(db, env);
+    logs.push(...syncRes.logs);
+  }
 
   const syncTable = async (table: string, payload: any[]) => {
     if (!payload || payload.length === 0) {
@@ -548,4 +780,3 @@ export async function forceSyncLocalToSupabase() {
 
   return { success: true, logs };
 }
-m

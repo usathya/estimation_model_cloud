@@ -1,6 +1,20 @@
 name = "estimation-model-cloud"
-compatibility_date = "2026-06-06"
-compatibility_flags = [ "nodejs_compat" ]
+compatibility_date = "2026-06-18"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "dist"
 
-[site]
-bucket = "./dist"
+[[kv_namespaces]]
+binding = "KV_CACHE"
+id = ""
+preview_id = ""
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "estimation-attachments"
+preview_bucket_name = "estimation-attachments-dev"
+
+[ai]
+binding = "AI"
+
+[env.production]
+vars = { ENVIRONMENT = "production" }
