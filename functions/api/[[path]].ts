@@ -1,6 +1,5 @@
 import { Hono } from 'hono'
 import { handle } from 'hono/cloudflare-pages'
-import { PDFParse } from 'pdf-parse'
 import mammoth from 'mammoth'
 import { toValidUuid, supabaseSelect, supabaseSelectSingle, supabaseInsert, supabaseUpsert, supabaseUpdate, supabaseDelete, supabaseConnectionTest, kvCacheGet, kvCachePut, kvCacheDelete } from './lib/supabase'
 import { callAI } from './lib/ai-router'
@@ -434,9 +433,7 @@ app.post('/api/stories/generate-from-attachments', async (c) => {
       const buffer = Buffer.from(f.data, 'base64')
       let extractedText = ''
       if (f.name.toLowerCase().endsWith('.pdf') || f.type === 'application/pdf') {
-        const pdfParser = new PDFParse({ data: new Uint8Array(buffer) })
-        const parsed = await pdfParser.getText()
-        extractedText = parsed.text
+        extractedText = buffer.toString('utf8').replace(/[^\x20-\x7E\n]/g, ' ').replace(/\s+/g, ' ').trim()
       } else if (f.name.toLowerCase().endsWith('.docx') || f.type.includes('word') || f.type.includes('officedocument')) {
         const parsed = await mammoth.extractRawText({ buffer })
         extractedText = parsed.value
