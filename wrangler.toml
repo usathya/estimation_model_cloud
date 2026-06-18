@@ -3,18 +3,12 @@ compatibility_date = "2026-06-18"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = "dist"
 
-[[kv_namespaces]]
-binding = "KV_CACHE"
-id = ""
-preview_id = ""
-
-[[r2_buckets]]
-binding = "R2"
-bucket_name = "estimation-attachments"
-preview_bucket_name = "estimation-attachments-dev"
+# Run: npx wrangler login  (opens browser to authenticate)
+# Then: npx wrangler kv namespace create estimation-cache
+# Copy the returned id below:
+# [[kv_namespaces]]
+# binding = "KV_CACHE"
+# id = "bca3f8adb3ea4b13b90ba0c54cea0455"
 
 [ai]
 binding = "AI"
-
-[env.production]
-vars = { ENVIRONMENT = "production" }

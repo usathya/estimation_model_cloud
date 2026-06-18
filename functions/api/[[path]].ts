@@ -14,7 +14,6 @@ type Env = {
     DEEPSEEK_API_KEY?: string
     GROQ_API_KEY?: string
     KV_CACHE?: KVNamespace
-    R2?: R2Bucket
     AI?: any
   }
 }
