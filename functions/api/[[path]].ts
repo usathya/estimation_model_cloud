@@ -3,7 +3,7 @@ import { handle } from 'hono/cloudflare-pages'
 import mammoth from 'mammoth'
 import { toValidUuid, supabaseSelect, supabaseSelectSingle, supabaseInsert, supabaseUpsert, supabaseUpdate, supabaseDelete, supabaseConnectionTest, kvCacheGet, kvCachePut, kvCacheDelete } from './lib/supabase'
 import { callAI } from './lib/ai-router'
-import { corsMiddleware, adminGuard } from './middleware'
+import { corsMiddleware } from './middleware'
 
 type Env = {
   Bindings: {
@@ -340,7 +340,9 @@ app.put('/api/projects/:id/actuals', async (c) => {
   } catch { return c.json({ error: 'Project not found' }, 404) }
 })
 
-app.delete('/api/projects/:id', adminGuard, async (c) => {
+app.delete('/api/projects/:id', async (c) => {
+  const profile = await getProfile(c)
+  if (profile.role !== 'admin') return c.json({ error: 'Access denied. Administrator privileges required.' }, 403)
   const { id } = c.req.param()
   const uuid = toValidUuid(id)
   await supabaseDelete(c.env, 'projects', { id: `eq.${uuid}` })
