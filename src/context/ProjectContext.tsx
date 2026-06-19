@@ -222,13 +222,23 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
       });
       if (res.ok) {
         const data = await res.json();
-        setCurrentProject(prev => ({
-          ...prev,
-          costConfig: data
-        }));
+        if (data) {
+          setCurrentProject(prev => ({
+            ...prev,
+            costConfig: data
+          }));
+        } else {
+          console.error('Cost config save returned empty response');
+          alert('Failed to save cost settings: empty response from server. Check console for details.');
+        }
+      } else {
+        const errData = await res.json().catch(() => ({ error: res.statusText }));
+        console.error('Cost config save failed:', res.status, errData);
+        alert(`Failed to save cost settings: ${errData.error || res.statusText}`);
       }
     } catch (err) {
       console.error('Error saving cost config:', err);
+      alert('Failed to save cost settings. See console for details.');
     }
   };
 

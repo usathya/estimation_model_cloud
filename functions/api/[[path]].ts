@@ -732,10 +732,10 @@ app.post('/api/cost_config', async (c) => {
     const existing = await supabaseSelect(c.env, 'cost_config', { project_id: `eq.${pid}` })
     if (existing?.length > 0) {
       const [updated] = await supabaseUpdate(c.env, 'cost_config', clean, { project_id: `eq.${pid}` })
-      return c.json(updated)
+      return c.json(updated ?? null)
     }
     const [created] = await supabaseInsert(c.env, 'cost_config', clean)
-    return c.json(created)
+    return c.json(created ?? null)
   } catch (err: any) {
     return c.json({ error: err.message }, 500)
   }
