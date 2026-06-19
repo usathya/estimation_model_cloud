@@ -22,7 +22,7 @@ const app = new Hono<Env>()
 app.use('*', corsMiddleware)
 
 function generateId(prefix: string): string {
-  return `${prefix}-${Math.random().toString(36).substr(2, 9)}-${Date.now().toString(36)}`
+  return toValidUuid(`${prefix}-${Math.random().toString(36).substr(2, 9)}-${Date.now().toString(36)}`)
 }
 
 function getStdOverheads(projectId: string, systemConfig: any = {}) {
@@ -100,7 +100,7 @@ async function getProfile(c: any) {
       if (profile) await kvCachePut(c.env.KV_CACHE, cacheKey, profile)
     } catch {}
   }
-  return profile || { id: 'user-01', email: 'umeshs.in@gmail.com', full_name: 'Umesh Sharma', organisation: 'Google Cloud Labs', role: 'admin', created_at: new Date().toISOString() }
+  return profile || { id: toValidUuid('user-01'), email: 'umeshs.in@gmail.com', full_name: 'Umesh Sharma', organisation: 'Google Cloud Labs', role: 'admin', created_at: new Date().toISOString() }
 }
 
 async function getSystemConfig(c: any) {
@@ -265,7 +265,7 @@ app.post('/api/projects', async (c) => {
     const body = await c.req.json()
     const profile = await getProfile(c)
     const sysConfig = await getSystemConfig(c)
-    const newProject = { id: generateId('proj'), name: body.name, client: body.client || '', description: body.description || '', version: body.version || '1.0', project_type: body.project_type || 'Web App', estimator_id: body.estimator_id || profile.id, estimator_name: profile.full_name || 'Umesh Sharma', status: 'Draft', currency: body.currency || 'SAR', team_size: Number(body.team_size) || 5, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
+    const newProject = { id: generateId('proj'), name: body.name, client: body.client || '', description: body.description || '', version: body.version || '1.0', project_type: body.project_type || 'Web App', estimator_id: body.estimator_id || profile.id, status: 'Draft', currency: body.currency || 'SAR', team_size: Number(body.team_size) || 5, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
     await supabaseInsert(c.env, 'projects', newProject)
     const costConfig = { project_id: newProject.id, fpa_cost_per_point: sysConfig.default_fpa_cost_per_point, cosmic_cost_per_point: sysConfig.default_cosmic_cost_per_point, hybrid_cost_per_point: sysConfig.default_hybrid_cost_per_point, productivity_rate: sysConfig.default_productivity_rate, fpa_productivity_rate: sysConfig.default_fpa_productivity_rate ?? 0.75, cosmic_productivity_rate: sysConfig.default_cosmic_productivity_rate ?? 1.5, hybrid_productivity_rate: sysConfig.default_hybrid_productivity_rate ?? 1.5, working_days_per_month: 22, use_role_rates: false, roles: [{ name: 'Developer', daily_rate: 2250, allocation_percent: 60 }, { name: 'Tester', daily_rate: 1700, allocation_percent: 25 }, { name: 'Project Manager', daily_rate: 3000, allocation_percent: 15 }] }
     await supabaseInsert(c.env, 'cost_config', costConfig)
@@ -321,7 +321,8 @@ app.put('/api/projects/:id', async (c) => {
   const { id } = c.req.param()
   const body = await c.req.json()
   try {
-    const [updated] = await supabaseUpdate(c.env, 'projects', { ...body, updated_at: new Date().toISOString() }, { id: `eq.${toValidUuid(id)}` })
+    const { estimator_name, ...cleanBody } = body
+    const [updated] = await supabaseUpdate(c.env, 'projects', { ...cleanBody, updated_at: new Date().toISOString() }, { id: `eq.${toValidUuid(id)}` })
     return c.json(updated)
   } catch { return c.json({ error: 'Project not found' }, 404) }
 })
