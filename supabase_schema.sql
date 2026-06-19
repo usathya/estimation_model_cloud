@@ -292,47 +292,62 @@ ALTER TABLE gemini_usage ENABLE ROW LEVEL SECURITY;
 -- synchronization transactions across these tables:
 
 -- 1. user_profiles Policy
-CREATE POLICY IF NOT EXISTS "permissive_all_user_profiles" ON user_profiles FOR ALL TO public USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "permissive_all_user_profiles" ON user_profiles;
+CREATE POLICY "permissive_all_user_profiles" ON user_profiles FOR ALL TO public USING (true) WITH CHECK (true);
 
 -- 2. projects Policy
-CREATE POLICY IF NOT EXISTS "permissive_all_projects" ON projects FOR ALL TO public USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "permissive_all_projects" ON projects;
+CREATE POLICY "permissive_all_projects" ON projects FOR ALL TO public USING (true) WITH CHECK (true);
 
 -- 3. user_stories Policy
-CREATE POLICY IF NOT EXISTS "permissive_all_user_stories" ON user_stories FOR ALL TO public USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "permissive_all_user_stories" ON user_stories;
+CREATE POLICY "permissive_all_user_stories" ON user_stories FOR ALL TO public USING (true) WITH CHECK (true);
 
 -- 4. ai_classifications Policy
-CREATE POLICY IF NOT EXISTS "permissive_all_ai_classifications" ON ai_classifications FOR ALL TO public USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "permissive_all_ai_classifications" ON ai_classifications;
+CREATE POLICY "permissive_all_ai_classifications" ON ai_classifications FOR ALL TO public USING (true) WITH CHECK (true);
 
 -- 5. ai_overrides Policy
-CREATE POLICY IF NOT EXISTS "permissive_all_ai_overrides" ON ai_overrides FOR ALL TO public USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "permissive_all_ai_overrides" ON ai_overrides;
+CREATE POLICY "permissive_all_ai_overrides" ON ai_overrides FOR ALL TO public USING (true) WITH CHECK (true);
 
 -- 6. fpa_gsc_ratings Policy
-CREATE POLICY IF NOT EXISTS "permissive_all_fpa_gsc_ratings" ON fpa_gsc_ratings FOR ALL TO public USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "permissive_all_fpa_gsc_ratings" ON fpa_gsc_ratings;
+CREATE POLICY "permissive_all_fpa_gsc_ratings" ON fpa_gsc_ratings FOR ALL TO public USING (true) WITH CHECK (true);
 
 -- 7. cosmic_movements Policy
-CREATE POLICY IF NOT EXISTS "permissive_all_cosmic_movements" ON cosmic_movements FOR ALL TO public USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "permissive_all_cosmic_movements" ON cosmic_movements;
+CREATE POLICY "permissive_all_cosmic_movements" ON cosmic_movements FOR ALL TO public USING (true) WITH CHECK (true);
 
 -- 8. hybrid_criteria Policy
-CREATE POLICY IF NOT EXISTS "permissive_all_hybrid_criteria" ON hybrid_criteria FOR ALL TO public USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "permissive_all_hybrid_criteria" ON hybrid_criteria;
+CREATE POLICY "permissive_all_hybrid_criteria" ON hybrid_criteria FOR ALL TO public USING (true) WITH CHECK (true);
 
 -- 9. hybrid_scores Policy
-CREATE POLICY IF NOT EXISTS "permissive_all_hybrid_scores" ON hybrid_scores FOR ALL TO public USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "permissive_all_hybrid_scores" ON hybrid_scores;
+CREATE POLICY "permissive_all_hybrid_scores" ON hybrid_scores FOR ALL TO public USING (true) WITH CHECK (true);
 
 -- 10. overheads Policy
-CREATE POLICY IF NOT EXISTS "permissive_all_overheads" ON overheads FOR ALL TO public USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "permissive_all_overheads" ON overheads;
+CREATE POLICY "permissive_all_overheads" ON overheads FOR ALL TO public USING (true) WITH CHECK (true);
 
 -- 11. cost_config Policy
-CREATE POLICY IF NOT EXISTS "permissive_all_cost_config" ON cost_config FOR ALL TO public USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "permissive_all_cost_config" ON cost_config;
+CREATE POLICY "permissive_all_cost_config" ON cost_config FOR ALL TO public USING (true) WITH CHECK (true);
 
 -- 12. system_config Policy
-CREATE POLICY IF NOT EXISTS "permissive_all_system_config" ON system_config FOR ALL TO public USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "permissive_all_system_config" ON system_config;
+CREATE POLICY "permissive_all_system_config" ON system_config FOR ALL TO public USING (true) WITH CHECK (true);
 
 -- 13. cf_ai_usage Policy
-CREATE POLICY IF NOT EXISTS "permissive_all_cf_ai_usage" ON cf_ai_usage FOR ALL TO public USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "permissive_all_cf_ai_usage" ON cf_ai_usage;
+CREATE POLICY "permissive_all_cf_ai_usage" ON cf_ai_usage FOR ALL TO public USING (true) WITH CHECK (true);
 
 -- 14. groq_usage Policy
-CREATE POLICY IF NOT EXISTS "permissive_all_groq_usage" ON groq_usage FOR ALL TO public USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "permissive_all_groq_usage" ON groq_usage;
+CREATE POLICY "permissive_all_groq_usage" ON groq_usage FOR ALL TO public USING (true) WITH CHECK (true);
 
 -- 15. gemini_usage Policy
-CREATE POLICY IF NOT EXISTS "permissive_all_gemini_usage" ON gemini_usage FOR ALL TO public USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "permissive_all_gemini_usage" ON gemini_usage;
+CREATE POLICY "permissive_all_gemini_usage" ON gemini_usage FOR ALL TO public USING (true) WITH CHECK (true);
 
