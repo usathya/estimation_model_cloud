@@ -249,7 +249,7 @@ app.get('/api/projects/:id', async (c) => {
     }
     const ratings = await supabaseSelect(c.env, 'fpa_gsc_ratings', { project_id: `eq.${toValidUuid(id)}` }) || []
     const sysConfig = await getSystemConfig(c)
-    let costConfig = await supabaseSelectSingle(c.env, 'cost_config', { project_id: `eq.${toValidUuid(id)}` })
+    let costConfig = await supabaseSelectSingle(c.env, 'cost_config', { project_id: `eq.${id}` })
     if (!costConfig) {
       costConfig = { project_id: id, fpa_cost_per_point: sysConfig.default_fpa_cost_per_point, cosmic_cost_per_point: sysConfig.default_cosmic_cost_per_point, hybrid_cost_per_point: sysConfig.default_hybrid_cost_per_point, productivity_rate: sysConfig.default_productivity_rate, fpa_productivity_rate: sysConfig.default_fpa_productivity_rate ?? 0.75, cosmic_productivity_rate: sysConfig.default_cosmic_productivity_rate ?? 1.5, hybrid_productivity_rate: sysConfig.default_hybrid_productivity_rate ?? 1.5, working_days_per_month: 22, use_role_rates: false, roles: [{ name: 'Developer', daily_rate: 2250, allocation_percent: 60 }, { name: 'Tester', daily_rate: 1700, allocation_percent: 25 }, { name: 'Project Manager', daily_rate: 3000, allocation_percent: 15 }] }
     }
@@ -720,10 +720,11 @@ app.get('/api/cost_config', async (c) => {
 
 app.post('/api/cost_config', async (c) => {
   const body = await c.req.json()
-  const existing = await supabaseSelect(c.env, 'cost_config', { project_id: `eq.${toValidUuid(body.project_id)}` })
-  const configData = { id: existing?.[0]?.id || toValidUuid(`cost_config_${body.project_id}`), ...body }
+  const pid = body.project_id
+  const existing = await supabaseSelect(c.env, 'cost_config', { project_id: `eq.${pid}` })
+  const configData = { id: existing?.[0]?.id || toValidUuid(`cost_config_${pid}`), ...body, project_id: pid }
   if (existing?.length > 0) {
-    const [updated] = await supabaseUpdate(c.env, 'cost_config', configData, { project_id: `eq.${toValidUuid(body.project_id)}` })
+    const [updated] = await supabaseUpdate(c.env, 'cost_config', configData, { project_id: `eq.${pid}` })
     return c.json(updated)
   }
   const [created] = await supabaseInsert(c.env, 'cost_config', configData)
