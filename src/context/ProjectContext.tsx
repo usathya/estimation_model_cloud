@@ -149,9 +149,13 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
         await loadProject(newProj.id);
         await fetchProjectList();
         return newProj;
+      } else {
+        const errData = await res.json().catch(() => ({ error: res.statusText }));
+        alert(`Failed to create project: ${errData.error || res.statusText}`);
       }
     } catch (err) {
       console.error('Error creating project:', err);
+      alert('Failed to create project. See console for details.');
     }
     return null;
   };
