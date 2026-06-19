@@ -255,96 +255,146 @@ export default function CalibrationFeedback() {
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
       
-      {/* SECTION 1: GLOBAL COST & PRODUCTIVITY COEFFICIENTS (Common for all models) */}
+      {/* SECTION 2: ESTIMATION OVERHEADS CALCULATION MATRIX */}
       <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
         <div className="bg-slate-50 p-4 border-b border-slate-200 flex items-center justify-between text-left">
           <div className="flex items-center gap-2">
-            <Percent className="w-4.5 h-4.5 text-indigo-650" />
-            <span className="font-sans font-extrabold text-xs text-slate-700">Financial Rates & Productivity Parameters</span>
+            <Percent className="w-4.5 h-4.5 text-indigo-700" />
+            <span className="font-sans font-extrabold text-xs text-slate-700">Project Estimation Overheads Configuration & Impact Matrix</span>
           </div>
-          <span className="text-[10px] font-mono text-slate-400">Common configuration for FPA, COSMIC, and Hybrid models</span>
+          <span className="text-[10px] font-mono text-slate-400">Values are a percentage (%) of the points derived from core models</span>
         </div>
-        
-        <form onSubmit={handleUpdateCostConfig} className="p-5 text-xs font-sans text-slate-650 bg-white grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 items-end">
-          <div className="space-y-1">
-            <label className="text-[9px] font-mono uppercase font-bold text-slate-450 block">FPA Prod (pts/day)</label>
-            <input
-              type="number"
-              step="0.1"
-              disabled={isViewer}
-              value={fpaProdInput}
-              onChange={(e) => setFpaProdInput(Number(e.target.value))}
-              className="w-full bg-slate-50 border border-slate-300 rounded p-2 focus:outline-none focus:border-indigo-500 font-semibold"
-            />
-          </div>
-          
-          <div className="space-y-1">
-            <label className="text-[9px] font-mono uppercase font-bold text-slate-450 block">FPA Cost per Point ({currentProject.project?.currency || 'SAR'})</label>
-            <input
-              type="number"
-              disabled={isViewer}
-              value={fpaInput}
-              onChange={(e) => setFpaInput(Number(e.target.value))}
-              className="w-full bg-slate-50 border border-slate-300 rounded p-2 focus:outline-none focus:border-indigo-500 font-semibold"
-            />
-          </div>
 
-          <div className="space-y-1">
-            <label className="text-[9px] font-mono uppercase font-bold text-slate-450 block">COSMIC Prod (pts/day)</label>
-            <input
-              type="number"
-              step="0.1"
-              disabled={isViewer}
-              value={cosmicProdInput}
-              onChange={(e) => setCosmicProdInput(Number(e.target.value))}
-              className="w-full bg-slate-50 border border-slate-200 rounded p-2 focus:outline-none focus:border-[#522986] font-semibold"
-            />
-          </div>
+        <div className="p-5 space-y-4">
+          <p className="text-slate-555 text-[11px] leading-relaxed">
+            The standard 8 non-functional overhead factors below are calculated over your core functional points. Changes here are saved directly to this project's specification copy.
+          </p>
 
-          <div className="space-y-1">
-            <label className="text-[9px] font-mono uppercase font-bold text-slate-450 block">COSMIC Cost per Point ({currentProject.project?.currency || 'SAR'})</label>
-            <input
-              type="number"
-              disabled={isViewer}
-              value={cosmicInput}
-              onChange={(e) => setCosmicInput(Number(e.target.value))}
-              className="w-full bg-slate-50 border border-slate-300 rounded p-2 focus:outline-none focus:border-indigo-500 font-semibold"
-            />
-          </div>
+          <div className="overflow-x-auto border border-slate-150 rounded-lg">
+            <table className="w-full text-xs text-slate-650 text-left">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200 text-[9px] font-mono uppercase text-slate-550 select-none">
+                  <th className="py-2.5 px-4">Overhead Element</th>
+                  <th className="py-2.5 px-3">Sizing Method</th>
+                  <th className="py-2.5 px-3 text-center">Status</th>
+                  <th className="py-2.5 px-3 text-center">Rate (%)</th>
+                  <th className="py-2.5 px-4 text-right">FPA Contribution</th>
+                  <th className="py-2.5 px-4 text-right">COSMIC Contribution</th>
+                  <th className="py-2.5 px-4 text-right font-semibold text-indigo-950">Hybrid Contribution</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-150 bg-white font-sans text-[11px]">
+                {overheadsList.map((oh: any) => {
+                  const fpaImpactPoints = oh.is_active && (oh.applies_to?.fpa ?? true) ? (fpaBasePoints * oh.value) / 100 : 0;
+                  const cosmicImpactPoints = oh.is_active && (oh.applies_to?.cosmic ?? true) ? (cosmicBasePoints * oh.value) / 100 : 0;
+                  const hybridImpactPoints = oh.is_active && (oh.applies_to?.hybrid ?? true) ? (hybridBasePoints * oh.value) / 100 : 0;
 
-          <div className="space-y-1">
-            <label className="text-[9px] font-mono uppercase font-bold text-slate-450 block">Hybrid Prod (pts/day)</label>
-            <input
-              type="number"
-              step="0.1"
-              disabled={isViewer}
-              value={hybridProdInput}
-              onChange={(e) => setHybridProdInput(Number(e.target.value))}
-              className="w-full bg-slate-50 border border-slate-300 rounded p-2 focus:outline-none focus:border-emerald-650 font-semibold"
-            />
-          </div>
+                  const fpaCostSaved = fpaImpactPoints * fpaCostPerPoint;
+                  const cosmicCostSaved = cosmicImpactPoints * cosmicCostPerPoint;
+                  const hybridCostSaved = hybridImpactPoints * hybridCostPerPoint;
 
-          <div className="space-y-1">
-            <label className="text-[9px] font-mono uppercase font-bold text-slate-450 block">Hybrid Cost/Point ({currentProject.project?.currency || 'SAR'})</label>
-            <input
-              type="number"
-              disabled={isViewer}
-              value={hybridInput}
-              onChange={(e) => setHybridInput(Number(e.target.value))}
-              className="w-full bg-slate-50 border border-slate-300 rounded p-2 focus:outline-none focus:border-indigo-500 font-semibold"
-            />
-          </div>
+                  return (
+                    <tr key={oh.id} className={`hover:bg-slate-50/50 transition-colors ${!oh.is_active ? 'opacity-60 bg-slate-50/20' : ''}`}>
+                      <td className="py-3 px-4 font-bold text-slate-800">{oh.name}</td>
+                      <td className="py-3 px-3 font-mono text-slate-500 text-[10px] uppercase">
+                        {oh.method === 'percentage' ? '% of model points' : 'fixed cost'}
+                      </td>
+                      <td className="py-3 px-3 text-center">
+                        <input
+                          type="checkbox"
+                          disabled={isViewer}
+                          checked={oh.is_active}
+                          onChange={async () => {
+                            if (isViewer) return;
+                            await saveOverhead({ ...oh, is_active: !oh.is_active });
+                          }}
+                          className="h-3.5 w-3.5 text-indigo-650 border-slate-300 rounded focus:ring-indigo-500 cursor-pointer"
+                        />
+                      </td>
+                      <td className="py-2 px-3 text-center">
+                        <div className="flex items-center justify-center gap-1">
+                          <input
+                            type="number"
+                            min="0"
+                            max="100"
+                            disabled={isViewer || !oh.is_active}
+                            defaultValue={oh.value}
+                            onBlur={async (e) => {
+                              const val = Number(e.target.value) || 0;
+                              if (val !== oh.value) {
+                                await saveOverhead({ ...oh, value: val });
+                              }
+                            }}
+                            onKeyDown={async (e) => {
+                              if (e.key === 'Enter') {
+                                const val = Number((e.target as HTMLInputElement).value) || 0;
+                                if (val !== oh.value) {
+                                  await saveOverhead({ ...oh, value: val });
+                                  (e.target as HTMLInputElement).blur();
+                                }
+                              }
+                            }}
+                            className="w-12 bg-slate-50 border border-slate-200 rounded p-1 text-center font-bold text-slate-800 text-xs focus:outline-none focus:border-indigo-500 disabled:opacity-50"
+                          />
+                          <span className="font-mono text-[10px] text-slate-405 font-bold">%</span>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 text-right font-mono text-slate-800">
+                        {fpaImpactPoints > 0 ? (
+                          <div className="space-y-0.5">
+                            <span className="font-bold text-indigo-750">+{fpaImpactPoints.toFixed(1)} AFP</span>
+                          </div>
+                        ) : (
+                          <span className="text-slate-400 italic text-[10px]">No Impact</span>
+                        )}
+                      </td>
+                      <td className="py-3 px-4 text-right font-mono text-slate-800">
+                        {cosmicImpactPoints > 0 ? (
+                          <div className="space-y-0.5">
+                            <span className="font-bold text-teal-750">+{cosmicImpactPoints.toFixed(1)} CFP</span>
+                          </div>
+                        ) : (
+                          <span className="text-slate-400 italic text-[10px]">No Impact</span>
+                        )}
+                      </td>
+                      <td className="py-3 px-4 text-right font-mono text-slate-800">
+                        {hybridImpactPoints > 0 ? (
+                          <div className="space-y-0.5">
+                            <span className="font-bold text-violet-750">+{hybridImpactPoints.toFixed(1)} HFP</span>
+                          </div>
+                        ) : (
+                          <span className="text-slate-400 italic text-[10px]">No Impact</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
 
-          {!isViewer && (
-            <button
-               id="cost-config-save-btn"
-               type="submit"
-               className="bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2 px-4 rounded shadow transition cursor-pointer leading-tight h-9 font-mono text-[9px] uppercase w-full"
-            >
-              Update Parameters
-            </button>
-          )}
-        </form>
+                {/* SUMMARY TOTALS ROW */}
+                <tr className="bg-slate-50/70 font-sans border-t-2 border-slate-250 font-black text-slate-900 leading-tight">
+                  <td colSpan={4} className="py-3 px-4 font-sans text-xs uppercase tracking-wider text-slate-700 font-extrabold text-left">
+                    Total Sizing Overheads Contribution
+                  </td>
+                  <td className="py-3 px-4 text-right font-mono text-slate-950">
+                    <div className="space-y-1">
+                      <span className="font-extrabold text-indigo-805">+{ohImpacts.fpaOhPoints.toFixed(1)} AFP</span>
+                    </div>
+                  </td>
+                  <td className="py-3 px-4 text-right font-mono text-slate-950">
+                    <div className="space-y-1">
+                      <span className="font-extrabold text-teal-805">+{ohImpacts.cosmicOhPoints.toFixed(1)} CFP</span>
+                    </div>
+                  </td>
+                  <td className="py-3 px-4 text-right font-mono text-slate-950">
+                    <div className="space-y-1">
+                      <span className="font-extrabold text-violet-805">+{ohImpacts.hybridOhPoints.toFixed(1)} HFP</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
 
