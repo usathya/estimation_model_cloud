@@ -518,6 +518,8 @@ export default function ProjectSetup({ onShowLoadModal }: ProjectSetupProps) {
               <option value="Mobile App">Mobile Native Application</option>
               <option value="Embedded-Realtime">Embedded and Real-time Engines</option>
               <option value="Mixed">Mixed Architecture Platform</option>
+              <option value="Traditional">Traditional (using VM , Manual Deployment)</option>
+              <option value="Hybrid">Hybrid ( VM + Containers , CICD Deployment)</option>
             </select>
           </div>
 

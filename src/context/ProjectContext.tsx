@@ -136,12 +136,12 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const createProject = async (name: string, client = 'General', version = '1.0', currency = 'SAR', team_size = 5) => {
+  const createProject = async (name: string, client = 'General', version = '1.0', currency = 'SAR', team_size = 5, project_type?: string, description?: string) => {
     try {
       const res = await fetch('/api/projects', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, client, version, currency, team_size })
+        body: JSON.stringify({ name, client, version, currency, team_size, project_type: project_type || 'Web App', description: description || '' })
       });
       if (res.ok) {
         const newProj = await res.json();

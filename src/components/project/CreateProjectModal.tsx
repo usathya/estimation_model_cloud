@@ -34,7 +34,9 @@ export default function CreateProjectModal({ onClose, onSuccess }: CreateProject
         client || 'General Client',
         version || '1.0',
         currency || 'SAR',
-        Number(teamSize) || 5
+        Number(teamSize) || 5,
+        projectType,
+        description
       );
 
       if (success) {
@@ -160,9 +162,11 @@ export default function CreateProjectModal({ onClose, onSuccess }: CreateProject
             >
               <option value="Web App">Web application (Cloud-native)</option>
               <option value="Mobile App">Mobile application (Android/iOS)</option>
-              <option value="Microservice API">API Backend & Microservices</option>
-              <option value="Custom Hardware/Embedded">Custom Hardware & IoT</option>
-              <option value="Core Database/Data Lake">Database / Data Lake migration</option>
+              <option value="Enterprise-ERP">Enterprise Software (ERP/CRM)</option>
+              <option value="Embedded-Realtime">Embedded and Real-time Engines</option>
+              <option value="Mixed">Mixed Architecture Platform</option>
+              <option value="Traditional">Traditional (using VM , Manual Deployment)</option>
+              <option value="Hybrid">Hybrid ( VM + Containers , CICD Deployment)</option>
             </select>
           </div>
 

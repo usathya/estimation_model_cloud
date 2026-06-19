@@ -150,10 +150,17 @@ CREATE TABLE IF NOT EXISTS cost_config (
   roles JSONB
 );
 
--- Add missing columns if table was auto-created without them
+-- Add missing columns if tables were auto-created without them
 ALTER TABLE cost_config ADD COLUMN IF NOT EXISTS fpa_productivity_rate NUMERIC(5,2) DEFAULT 0.75;
 ALTER TABLE cost_config ADD COLUMN IF NOT EXISTS cosmic_productivity_rate NUMERIC(5,2) DEFAULT 1.5;
 ALTER TABLE cost_config ADD COLUMN IF NOT EXISTS hybrid_productivity_rate NUMERIC(5,2) DEFAULT 1.5;
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS estimator_name TEXT DEFAULT 'Umesh Sharma';
+ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS jira_config JSONB;
+ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS azure_config JSONB;
+ALTER TABLE system_config ADD COLUMN IF NOT EXISTS default_fpa_productivity_rate NUMERIC(5,2) DEFAULT 0.75;
+ALTER TABLE system_config ADD COLUMN IF NOT EXISTS default_cosmic_productivity_rate NUMERIC(5,2) DEFAULT 1.5;
+ALTER TABLE system_config ADD COLUMN IF NOT EXISTS default_hybrid_productivity_rate NUMERIC(5,2) DEFAULT 1.5;
 
 -- System Configuration
 CREATE TABLE IF NOT EXISTS system_config (

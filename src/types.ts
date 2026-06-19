@@ -23,7 +23,7 @@ export interface Project {
   client: string;
   description: string;
   version: string;
-  project_type: 'Web App' | 'Enterprise-ERP' | 'Mobile App' | 'Embedded-Realtime' | 'Mixed';
+  project_type: 'Web App' | 'Enterprise-ERP' | 'Mobile App' | 'Embedded-Realtime' | 'Mixed' | 'Traditional' | 'Hybrid';
   estimator_id: string;
   estimator_name?: string;
   status: 'Draft' | 'Under Review' | 'Approved';

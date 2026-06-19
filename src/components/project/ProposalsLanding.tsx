@@ -355,6 +355,8 @@ export default function ProposalsLanding({ onSelectTab, onOpenCreateModal }: Pro
                             <option value="Enterprise-ERP">Enterprise / ERP Core</option>
                             <option value="Embedded-Realtime">Embedded / IoT Realtime</option>
                             <option value="Mixed">Mixed platform / Hybrid core</option>
+                            <option value="Traditional">Traditional (using VM , Manual Deployment)</option>
+                            <option value="Hybrid">Hybrid ( VM + Containers , CICD Deployment)</option>
                           </select>
                         </div>
 

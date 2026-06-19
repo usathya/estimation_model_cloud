@@ -261,24 +261,28 @@ app.get('/api/projects/:id', async (c) => {
 })
 
 app.post('/api/projects', async (c) => {
-  const body = await c.req.json()
-  const profile = await getProfile(c)
-  const sysConfig = await getSystemConfig(c)
-  const newProject = { id: generateId('proj'), name: body.name, client: body.client || '', description: body.description || '', version: body.version || '1.0', project_type: body.project_type || 'Web App', estimator_id: body.estimator_id || profile.id, estimator_name: profile.full_name || 'Umesh Sharma', status: 'Draft', currency: body.currency || 'SAR', team_size: Number(body.team_size) || 5, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
-  await supabaseInsert(c.env, 'projects', newProject)
-  const costConfig = { project_id: newProject.id, fpa_cost_per_point: sysConfig.default_fpa_cost_per_point, cosmic_cost_per_point: sysConfig.default_cosmic_cost_per_point, hybrid_cost_per_point: sysConfig.default_hybrid_cost_per_point, productivity_rate: sysConfig.default_productivity_rate, fpa_productivity_rate: sysConfig.default_fpa_productivity_rate ?? 0.75, cosmic_productivity_rate: sysConfig.default_cosmic_productivity_rate ?? 1.5, hybrid_productivity_rate: sysConfig.default_hybrid_productivity_rate ?? 1.5, working_days_per_month: 22, use_role_rates: false, roles: [{ name: 'Developer', daily_rate: 2250, allocation_percent: 60 }, { name: 'Tester', daily_rate: 1700, allocation_percent: 25 }, { name: 'Project Manager', daily_rate: 3000, allocation_percent: 15 }] }
-  await supabaseInsert(c.env, 'cost_config', costConfig)
-  const overheads = getStdOverheads(newProject.id, sysConfig)
-  await supabaseInsert(c.env, 'overheads', overheads)
-  const defaultCriteria = [
-    { id: generateId('crit'), project_id: newProject.id, name: 'UI Complexity', description: 'Interactive elements, visual animations, responsiveness standards', max_score: 10, weight_percent: 30, sort_order: 1 },
-    { id: generateId('crit'), project_id: newProject.id, name: 'Integration Risk', description: 'Third party bindings, security handshake scopes, latency expectations', max_score: 10, weight_percent: 25, sort_order: 2 },
-    { id: generateId('crit'), project_id: newProject.id, name: 'Data Volume', description: 'Query count requirements, schema dimensions, indexing overhead', max_score: 10, weight_percent: 20, sort_order: 3 },
-    { id: generateId('crit'), project_id: newProject.id, name: 'Business Logic', description: 'Complex rulesets, calculation steps, compliance constraints', max_score: 10, weight_percent: 25, sort_order: 4 }
-  ]
-  await supabaseInsert(c.env, 'hybrid_criteria', defaultCriteria)
-  await kvCacheDelete(c.env.KV_CACHE, 'system_config')
-  return c.json(newProject, 201)
+  try {
+    const body = await c.req.json()
+    const profile = await getProfile(c)
+    const sysConfig = await getSystemConfig(c)
+    const newProject = { id: generateId('proj'), name: body.name, client: body.client || '', description: body.description || '', version: body.version || '1.0', project_type: body.project_type || 'Web App', estimator_id: body.estimator_id || profile.id, estimator_name: profile.full_name || 'Umesh Sharma', status: 'Draft', currency: body.currency || 'SAR', team_size: Number(body.team_size) || 5, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
+    await supabaseInsert(c.env, 'projects', newProject)
+    const costConfig = { project_id: newProject.id, fpa_cost_per_point: sysConfig.default_fpa_cost_per_point, cosmic_cost_per_point: sysConfig.default_cosmic_cost_per_point, hybrid_cost_per_point: sysConfig.default_hybrid_cost_per_point, productivity_rate: sysConfig.default_productivity_rate, fpa_productivity_rate: sysConfig.default_fpa_productivity_rate ?? 0.75, cosmic_productivity_rate: sysConfig.default_cosmic_productivity_rate ?? 1.5, hybrid_productivity_rate: sysConfig.default_hybrid_productivity_rate ?? 1.5, working_days_per_month: 22, use_role_rates: false, roles: [{ name: 'Developer', daily_rate: 2250, allocation_percent: 60 }, { name: 'Tester', daily_rate: 1700, allocation_percent: 25 }, { name: 'Project Manager', daily_rate: 3000, allocation_percent: 15 }] }
+    await supabaseInsert(c.env, 'cost_config', costConfig)
+    const overheads = getStdOverheads(newProject.id, sysConfig)
+    await supabaseInsert(c.env, 'overheads', overheads)
+    const defaultCriteria = [
+      { id: generateId('crit'), project_id: newProject.id, name: 'UI Complexity', description: 'Interactive elements, visual animations, responsiveness standards', max_score: 10, weight_percent: 30, sort_order: 1 },
+      { id: generateId('crit'), project_id: newProject.id, name: 'Integration Risk', description: 'Third party bindings, security handshake scopes, latency expectations', max_score: 10, weight_percent: 25, sort_order: 2 },
+      { id: generateId('crit'), project_id: newProject.id, name: 'Data Volume', description: 'Query count requirements, schema dimensions, indexing overhead', max_score: 10, weight_percent: 20, sort_order: 3 },
+      { id: generateId('crit'), project_id: newProject.id, name: 'Business Logic', description: 'Complex rulesets, calculation steps, compliance constraints', max_score: 10, weight_percent: 25, sort_order: 4 }
+    ]
+    await supabaseInsert(c.env, 'hybrid_criteria', defaultCriteria)
+    await kvCacheDelete(c.env.KV_CACHE, 'system_config')
+    return c.json(newProject, 201)
+  } catch (err: any) {
+    return c.json({ error: `Failed to create project: ${err.message}` }, 500)
+  }
 })
 
 app.post('/api/projects/:id/duplicate', async (c) => {
