@@ -719,16 +719,26 @@ app.get('/api/cost_config', async (c) => {
 })
 
 app.post('/api/cost_config', async (c) => {
-  const body = await c.req.json()
-  const pid = body.project_id
-  const existing = await supabaseSelect(c.env, 'cost_config', { project_id: `eq.${pid}` })
-  const configData = { id: existing?.[0]?.id || toValidUuid(`cost_config_${pid}`), ...body, project_id: pid }
-  if (existing?.length > 0) {
-    const [updated] = await supabaseUpdate(c.env, 'cost_config', configData, { project_id: `eq.${pid}` })
-    return c.json(updated)
+  try {
+    const body = await c.req.json()
+    const pid = body.project_id
+    const allowed = ['id','project_id','fpa_cost_per_point','cosmic_cost_per_point','hybrid_cost_per_point','productivity_rate','fpa_productivity_rate','cosmic_productivity_rate','hybrid_productivity_rate','working_days_per_month','use_role_rates','roles']
+    const clean: any = {}
+    for (const key of allowed) {
+      if (body[key] !== undefined) clean[key] = body[key]
+    }
+    clean.id = clean.id || toValidUuid(`cost_config_${pid}`)
+    clean.project_id = pid
+    const existing = await supabaseSelect(c.env, 'cost_config', { project_id: `eq.${pid}` })
+    if (existing?.length > 0) {
+      const [updated] = await supabaseUpdate(c.env, 'cost_config', clean, { project_id: `eq.${pid}` })
+      return c.json(updated)
+    }
+    const [created] = await supabaseInsert(c.env, 'cost_config', clean)
+    return c.json(created)
+  } catch (err: any) {
+    return c.json({ error: err.message }, 500)
   }
-  const [created] = await supabaseInsert(c.env, 'cost_config', configData)
-  return c.json(created)
 })
 
 // --- ESTIMATOR FEEDBACK ---

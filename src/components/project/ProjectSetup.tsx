@@ -718,6 +718,60 @@ export default function ProjectSetup({ onShowLoadModal }: ProjectSetupProps) {
                 )}
               </div>
 
+              {/* Level 2: Productivity Rates */}
+              <div>
+                <h4 className="font-sans font-bold text-xs text-slate-700 mb-3 border-l-2 border-teal-600 pl-2">Level 2 — Baseline Productivity Rates</h4>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-mono font-bold uppercase text-slate-400">FPA (points / day)</label>
+                    <input
+                      id="cost-productivity-fpa"
+                      type="number"
+                      step="0.1"
+                      disabled={isViewer}
+                      value={fpaProductivity}
+                      onChange={(e) => setFpaProductivity(Number(e.target.value))}
+                      className="w-full border border-slate-200 bg-slate-50 font-sans text-xs py-1.5 px-3 rounded-lg focus:outline-none"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-mono font-bold uppercase text-slate-400">COSMIC (points / day)</label>
+                    <input
+                      id="cost-productivity-cosmic"
+                      type="number"
+                      step="0.1"
+                      disabled={isViewer}
+                      value={cosmicProductivity}
+                      onChange={(e) => setCosmicProductivity(Number(e.target.value))}
+                      className="w-full border border-slate-200 bg-slate-50 font-sans text-xs py-1.5 px-3 rounded-lg focus:outline-none"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-mono font-bold uppercase text-slate-400">MCDA Hybrid (points / day)</label>
+                    <input
+                      id="cost-productivity-hybrid"
+                      type="number"
+                      step="0.1"
+                      disabled={isViewer}
+                      value={hybridProductivity}
+                      onChange={(e) => setHybridProductivity(Number(e.target.value))}
+                      className="w-full border border-slate-200 bg-slate-50 font-sans text-xs py-1.5 px-3 rounded-lg focus:outline-none"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-mono font-bold uppercase text-slate-400">Working Days Per Month</label>
+                    <input
+                      id="cost-working-days"
+                      type="number"
+                      disabled={isViewer}
+                      value={workingDays}
+                      onChange={(e) => setWorkingDays(Number(e.target.value))}
+                      className="w-full border border-slate-200 bg-slate-50 font-sans text-xs py-1.5 px-3 rounded-lg focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* Level 3: Role-Based toggle */}
               <div>
                 <div className="flex items-center justify-between mb-3 border-l-2 border-teal-600 pl-2 flex-wrap gap-2">

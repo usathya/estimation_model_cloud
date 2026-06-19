@@ -255,6 +255,99 @@ export default function CalibrationFeedback() {
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
       
+      {/* SECTION 1: GLOBAL COST & PRODUCTIVITY COEFFICIENTS (Common for all models) */}
+      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+        <div className="bg-slate-50 p-4 border-b border-slate-200 flex items-center justify-between text-left">
+          <div className="flex items-center gap-2">
+            <Percent className="w-4.5 h-4.5 text-indigo-650" />
+            <span className="font-sans font-extrabold text-xs text-slate-700">Financial Rates & Productivity Parameters</span>
+          </div>
+          <span className="text-[10px] font-mono text-slate-400">Common configuration for FPA, COSMIC, and Hybrid models</span>
+        </div>
+        
+        <form onSubmit={handleUpdateCostConfig} className="p-5 text-xs font-sans text-slate-650 bg-white grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 items-end">
+          <div className="space-y-1">
+            <label className="text-[9px] font-mono uppercase font-bold text-slate-450 block">FPA Prod (pts/day)</label>
+            <input
+              type="number"
+              step="0.1"
+              disabled={isViewer}
+              value={fpaProdInput}
+              onChange={(e) => setFpaProdInput(Number(e.target.value))}
+              className="w-full bg-slate-50 border border-slate-300 rounded p-2 focus:outline-none focus:border-indigo-500 font-semibold"
+            />
+          </div>
+          
+          <div className="space-y-1">
+            <label className="text-[9px] font-mono uppercase font-bold text-slate-450 block">FPA Cost per Point ({currentProject.project?.currency || 'SAR'})</label>
+            <input
+              type="number"
+              disabled={isViewer}
+              value={fpaInput}
+              onChange={(e) => setFpaInput(Number(e.target.value))}
+              className="w-full bg-slate-50 border border-slate-300 rounded p-2 focus:outline-none focus:border-indigo-500 font-semibold"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[9px] font-mono uppercase font-bold text-slate-450 block">COSMIC Prod (pts/day)</label>
+            <input
+              type="number"
+              step="0.1"
+              disabled={isViewer}
+              value={cosmicProdInput}
+              onChange={(e) => setCosmicProdInput(Number(e.target.value))}
+              className="w-full bg-slate-50 border border-slate-200 rounded p-2 focus:outline-none focus:border-[#522986] font-semibold"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[9px] font-mono uppercase font-bold text-slate-450 block">COSMIC Cost per Point ({currentProject.project?.currency || 'SAR'})</label>
+            <input
+              type="number"
+              disabled={isViewer}
+              value={cosmicInput}
+              onChange={(e) => setCosmicInput(Number(e.target.value))}
+              className="w-full bg-slate-50 border border-slate-300 rounded p-2 focus:outline-none focus:border-indigo-500 font-semibold"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[9px] font-mono uppercase font-bold text-slate-450 block">Hybrid Prod (pts/day)</label>
+            <input
+              type="number"
+              step="0.1"
+              disabled={isViewer}
+              value={hybridProdInput}
+              onChange={(e) => setHybridProdInput(Number(e.target.value))}
+              className="w-full bg-slate-50 border border-slate-300 rounded p-2 focus:outline-none focus:border-emerald-650 font-semibold"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[9px] font-mono uppercase font-bold text-slate-450 block">Hybrid Cost/Point ({currentProject.project?.currency || 'SAR'})</label>
+            <input
+              type="number"
+              disabled={isViewer}
+              value={hybridInput}
+              onChange={(e) => setHybridInput(Number(e.target.value))}
+              className="w-full bg-slate-50 border border-slate-300 rounded p-2 focus:outline-none focus:border-indigo-500 font-semibold"
+            />
+          </div>
+
+          {!isViewer && (
+            <button
+               id="cost-config-save-btn"
+               type="submit"
+               className="bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2 px-4 rounded shadow transition cursor-pointer leading-tight h-9 font-mono text-[9px] uppercase w-full"
+            >
+              Update Parameters
+            </button>
+          )}
+        </form>
+      </div>
+
+
       {/* SECTION 2: ESTIMATION OVERHEADS CALCULATION MATRIX */}
       <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
         <div className="bg-slate-50 p-4 border-b border-slate-200 flex items-center justify-between text-left">
