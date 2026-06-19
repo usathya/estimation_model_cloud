@@ -145,13 +145,15 @@ CREATE TABLE IF NOT EXISTS cost_config (
   cosmic_cost_per_point NUMERIC(10,2) DEFAULT 500,
   hybrid_cost_per_point NUMERIC(10,2) DEFAULT 500,
   productivity_rate NUMERIC(5,2) DEFAULT 1.5,
-  fpa_productivity_rate NUMERIC(5,2) DEFAULT 0.75,
-  cosmic_productivity_rate NUMERIC(5,2) DEFAULT 1.5,
-  hybrid_productivity_rate NUMERIC(5,2) DEFAULT 1.5,
   working_days_per_month INTEGER DEFAULT 22,
   use_role_rates BOOLEAN DEFAULT FALSE,
   roles JSONB
 );
+
+-- Add missing columns if table was auto-created without them
+ALTER TABLE cost_config ADD COLUMN IF NOT EXISTS fpa_productivity_rate NUMERIC(5,2) DEFAULT 0.75;
+ALTER TABLE cost_config ADD COLUMN IF NOT EXISTS cosmic_productivity_rate NUMERIC(5,2) DEFAULT 1.5;
+ALTER TABLE cost_config ADD COLUMN IF NOT EXISTS hybrid_productivity_rate NUMERIC(5,2) DEFAULT 1.5;
 
 -- System Configuration
 CREATE TABLE IF NOT EXISTS system_config (
