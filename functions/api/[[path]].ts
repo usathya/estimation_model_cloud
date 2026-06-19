@@ -172,7 +172,8 @@ app.post('/api/auth/profile', async (c) => {
 })
 
 // --- PROJECTS ---
-function enrichProject(proj: any, stories: any[], classifications: any[], movements: any[], ratings: any[], overheads: any[]) {
+function enrichProject(proj: any, allStories: any[], classifications: any[], movements: any[], ratings: any[], overheads: any[]) {
+  const stories = allStories.filter((s: any) => s.project_id === proj.id)
   const storyIds = stories.map((s: any) => s.id)
   let ufp = 0
   stories.forEach((s: any) => {
